@@ -1,0 +1,16 @@
+[
+{
+  "modid": "hypixelsays",
+  "name": "Hypixel Says",
+  "description": "Hypixel Says requeue mod",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Yoursole"],
+  "credits": "Yoursole, and the Hypixel Says community discord",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
