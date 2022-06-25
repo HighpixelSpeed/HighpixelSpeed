@@ -8,9 +8,13 @@ buildscript {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
+        maven {
+            name = "jitpack"
+            url = "https://jitpack.io/"
+        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath "com.github.asbyth:ForgeGradle:6f53277"
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -24,7 +28,7 @@ plugins {
 }
 */
 version = "1.0"
-group= "com.yoursole.hypixelsays" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group= "com.yoursole.hypixelsays" // https://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "hypixelsays"
 
 minecraft {
@@ -59,8 +63,8 @@ dependencies {
     //deobfProvided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
 
     // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    // https://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
+    // https://www.gradle.org/docs/current/userguide/dependency_management.html
 
 }
 
