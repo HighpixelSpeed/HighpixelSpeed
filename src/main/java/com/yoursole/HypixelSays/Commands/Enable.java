@@ -33,18 +33,23 @@ public class Enable extends CommandBase {
 
 
             if(GameData.isEnabled) {
-                sender.addChatMessage(new ChatComponentText("§4[AUTOREQUE]: §bHypixel says mode Enabled"));
-                sender.addChatMessage(new ChatComponentText("§4[AUTOREQUE]: §bLag mode enabled by default, do /hs lag to toggle"));
-                GameData.lagMode = true;
+                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bHypixel says mode Enabled"));
+                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bLag mode disabled by default, do /hs lag to toggle"));
+                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bRequeuing if game is guaranteed loss disabled by default, do /hs loss to toggle"));
+                GameData.lagMode = false;
+                GameData.queueOnLoss = false;
             }
             else
-                sender.addChatMessage(new ChatComponentText("§4[AUTOREQUE]: §bHypixel says mode Disabled"));
+                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bHypixel says mode Disabled"));
 
             GameData.tellraw = false;
         }else if(args.length == 1){
             if(args[0].equalsIgnoreCase("lag")){
                 GameData.lagMode = !GameData.lagMode;
-                sender.addChatMessage(new ChatComponentText((GameData.lagMode)?"§4[AUTOREQUE]: §bLag mode is enabled":"§4[AUTOREQUE]: §bLag mode is disabled"));
+                sender.addChatMessage(new ChatComponentText((GameData.lagMode)?"\u00A7§4[AUTOREQUE]: \u00A7§bLag mode is enabled":"\u00A7§4[AUTOREQUE]: \u00A7§bLag mode is disabled"));
+            }else if(args[0].equalsIgnoreCase("loss")){
+                GameData.queueOnLoss = !GameData.queueOnLoss;
+                sender.addChatMessage(new ChatComponentText((GameData.queueOnLoss)?"\u00A7§4[AUTOREQUE]: \u00A7§bRequeuing on loss is enabled":"\u00A7§4[AUTOREQUE]: \u00A7§bRequeuing on loss is disabled"));
             }
         }
 
@@ -57,7 +62,7 @@ public class Enable extends CommandBase {
 
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-        return new ArrayList<String>(){{add("enable");}};
+        return new ArrayList<String>(){{add("lag");add("loss");}};
     }
 
 
