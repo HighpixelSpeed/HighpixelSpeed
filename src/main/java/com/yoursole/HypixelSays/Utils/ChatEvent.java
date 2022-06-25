@@ -42,23 +42,21 @@ public class ChatEvent {
                 mode = o.get("mode").toString();
             }catch (Exception exx){
                 GameData.inHypixelSays=false;
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§4[AUTOREQUE]: §bNot Hypixel Says"));
                 GameData.reset();
             }
 
            if(mode.equalsIgnoreCase("\"santa_says\"")||mode.equalsIgnoreCase("\"simon_says\"")){
                GameData.inHypixelSays=true;
-               Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§4[AUTOREQUE]: §bJoined Hypixel Says"));
+               Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bJoined Hypixel Says"));
                GameData.reset();
            }else{
                GameData.inHypixelSays=false;
-               Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§4[AUTOREQUE]: §bNot Hypixel Says"));
+               Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bNot Hypixel Says"));
                GameData.reset();
            }
 
             GameData.tellraw=false;
         }else if(GameData.inHypixelSays && message.toLowerCase().startsWith("next task")){
-            //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("fkdlasjfklasdfjkl"));
             GameData.round++;
             ArrayList<String> lines = (ArrayList<String>) getSidebarLines();
             for(String line : lines){
@@ -77,46 +75,46 @@ public class ChatEvent {
 
             boolean isOnePointer = Utils.isOnePointer(message);
 
+			String firstLine = lines.get(8);
+			String secondLine = lines.get(7);
+			String a = StringUtils.stripControlCodes(firstLine);
+			String b = StringUtils.stripControlCodes(secondLine);
+			a = cleanSB(a.split(":")[1].replace(" ",""));
+			b = cleanSB(b.split(":")[1].replace(" ",""));
+			try{
+				GameData.firstPlaceScore=Integer.parseInt(a);
+			}catch (NumberFormatException exx){
+			}
+			try{
+				GameData.secondPlaceScore=Integer.parseInt(b);
+			}catch (NumberFormatException exx){
+			}
+			
             if(!isOnePointer){
                 int roundsleft = 16 - GameData.round;
                 int possiblePoints = roundsleft*3;
 
-                String line = lines.get(7);
-                String a = StringUtils.stripControlCodes(line);
-                a = a.split(":")[1].replace(" ","");
-                a = cleanSB(a);
-                try{
-                    GameData.secondPlaceScore=Integer.parseInt(a);
-                }catch (NumberFormatException exx){
-
-                }
-
-                //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("DEBUG{round="+GameData.round+", points="+GameData.score+",secondPoints="+GameData.secondPlaceScore+"}"));
-
                 if(possiblePoints+GameData.secondPlaceScore<GameData.score){
                     Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§4[AUTOREQUE]: §bYou were automatically requeued"));
+                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bYou won and were automatically requeued"));
+                    GameData.reset();
+                }else if(possiblePoints+GameData.score<GameData.firstPlaceScore && GameData.queueOnLoss){
+                    Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
+                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bYou did not win and were automatically requeued"));
                     GameData.reset();
                 }
+				
             }else{
                 int roundsleft = 15 - GameData.round;
                 int possiblePoints = (roundsleft*3)+1;
 
-                String line = lines.get(7);
-                String a = StringUtils.stripControlCodes(line);
-                a = a.split(":")[1].replace(" ","");
-                a = cleanSB(a);
-                try{
-                    GameData.secondPlaceScore=Integer.parseInt(a);
-                }catch (NumberFormatException exx){
-
-                }
-
-                //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("DEBUG{round="+GameData.round+", points="+GameData.score+",secondPoints="+GameData.secondPlaceScore+"}"));
-
                 if(possiblePoints+GameData.secondPlaceScore<GameData.score){
                     Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("§4[AUTOREQUE]: §bYou were automatically requeued"));
+                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bYou won and were automatically requeued"));
+                    GameData.reset();
+                }else if(possiblePoints+GameData.score<GameData.firstPlaceScore && GameData.queueOnLoss){
+                    Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
+                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bYou did not win and were automatically requeued"));
                     GameData.reset();
                 }
             }
