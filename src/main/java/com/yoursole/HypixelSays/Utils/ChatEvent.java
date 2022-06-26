@@ -101,11 +101,13 @@ public class ChatEvent {
             
             if(possiblePoints+GameData.secondPlaceScore<GameData.score){
                 Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bYou won and were automatically requeued"));
+				Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
+				GameData.reset();
             }else if(possiblePoints+GameData.score<GameData.firstPlaceScore && GameData.queueOnLoss){
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bYou did not win and were automatically requeued"));
+				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bYou did not win and were automatically requeued"));
+				Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
+				GameData.reset();
             }
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
-            GameData.reset();
         }
     }
 
