@@ -7,7 +7,9 @@ Launch minecraft with forge 1.8.9
 
 ### Commands:
 `/hs`: This enables and disables the mod.  Must be done in a lobby 
+
 `/hs lag`: This enables lag compatability if the server is lagging or you have high ping/bad connection
+
 `/hs loss`: This enables requeuing if you cannot get enough points and are guaranteed to lose the game
 
 ### Usage:
