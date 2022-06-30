@@ -1,7 +1,7 @@
 # Hypixel Says AUTOMATIC REQUEUE MOD:
 
 ### Instructions:
-Download the `hypixelsays-1.0.jar` file from the github.
+Download the latest release file from the github.
 Put this in the mods folder (which can be accessed by doing `%appdata%` in search, then opening `.minecraft` and `mods`).
 Launch minecraft with forge 1.8.9.
 
