@@ -196,8 +196,6 @@ public class ChatEvent {
             int roundsleft = 16 - GameData.round;
             possiblePoints = roundsleft*3;
         }
-        Utils.sendChat("\u00A7§bRound " + GameData.round + " [" + possiblePoints + " + " + GameData.scores[1] + " < " + GameData.score + "]");
-        Utils.sendChat("\u00A7§bRound " + GameData.round + " [" + possiblePoints + " + " + GameData.score + " < " + GameData.scores[0] + "]");
         if (GameData.secondPlaceLeft && !GameData.disconnectedPlayer.equals(GameData.players[1])){
             GameData.secondPlaceLeft = false;
         }
