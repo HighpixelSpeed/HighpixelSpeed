@@ -7,6 +7,7 @@ public class GameData {
     public static boolean queueOnLoss = true;
     public static boolean inHypixelSays = false;
     public static boolean isOnePointer = false;
+    public static boolean fortyPointGame = false;
 
     public static int round = 1;
     public static int score = 0;

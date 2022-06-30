@@ -47,11 +47,11 @@ public class ChatEvent {
 
            if(mode.equalsIgnoreCase("\"santa_says\"")||mode.equalsIgnoreCase("\"simon_says\"")){
                GameData.inHypixelSays=true;
-               sendChat("\u00A7§bJoined Hypixel Says");
+               Utils.sendChat("\u00A7§bJoined Hypixel Says");
                GameData.reset();
            }else{
                GameData.inHypixelSays=false;
-               sendChat("\u00A7§bNot Hypixel Says");
+               Utils.sendChat("\u00A7§bNot Hypixel Says");
                GameData.reset();
            }
             GameData.tellraw=false;
@@ -187,10 +187,6 @@ public class ChatEvent {
         return a;
     }
     
-    public static void sendChat(String message) {
-        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: " + message));
-    }
-    
     static void requeue(boolean isNewTask) {
         int possiblePoints;
         if (GameData.isOnePointer && isNewTask){  //if this is executed on "Game ended," it needs to be counted as 3-pointer,
@@ -200,21 +196,25 @@ public class ChatEvent {
             int roundsleft = 16 - GameData.round;
             possiblePoints = roundsleft*3;
         }
-        sendChat("\u00A7§bRound " + GameData.round + " [" + possiblePoints + " + " + GameData.scores[1] + " < " + GameData.score + "]");
-        sendChat("\u00A7§bRound " + GameData.round + " [" + possiblePoints + " + " + GameData.score + " < " + GameData.scores[0] + "]");
+        Utils.sendChat("\u00A7§bRound " + GameData.round + " [" + possiblePoints + " + " + GameData.scores[1] + " < " + GameData.score + "]");
+        Utils.sendChat("\u00A7§bRound " + GameData.round + " [" + possiblePoints + " + " + GameData.score + " < " + GameData.scores[0] + "]");
         if (GameData.secondPlaceLeft && !GameData.disconnectedPlayer.equals(GameData.players[1])){
             GameData.secondPlaceLeft = false;
         }
-        if (possiblePoints+GameData.scores[1]<GameData.score){
-            sendChat("\u00A7§bYou won and were automatically requeued");
+        if (possiblePoints+GameData.score<40 && GameData.fortyPointGame){
+            Utils.sendChat("\u00A7§bYou did not get at least 40 points and were automatically requeued");
             Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
             GameData.reset();
-        }else if(possiblePoints+GameData.score<GameData.scores[0] && GameData.queueOnLoss){
-            sendChat("\u00A7§bYou did not win and were automatically requeued");
+        }else if (possiblePoints+GameData.scores[1]<GameData.score){
+            Utils.sendChat("\u00A7§bYou won and were automatically requeued");
+            Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
+            GameData.reset();
+        }else if (possiblePoints+GameData.score<GameData.scores[0] && GameData.queueOnLoss){
+            Utils.sendChat("\u00A7§bYou did not win and were automatically requeued");
             Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
             GameData.reset();
         }else if (possiblePoints+GameData.scores[2]<GameData.score && GameData.secondPlaceLeft){
-            sendChat("\u00A7§bYou won and were automatically requeued");
+            Utils.sendChat("\u00A7§bYou won and were automatically requeued");
             Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
             GameData.reset();
         }

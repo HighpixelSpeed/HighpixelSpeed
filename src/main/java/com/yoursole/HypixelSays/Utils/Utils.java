@@ -16,7 +16,11 @@ public class Utils {
             }else{
                 Thread.sleep(1000);
             }
- */
+ */    
+    public static void sendChat(String message) {
+        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: " + message));
+    }
+    
     public static boolean isOnePointer(String message){
         message = StringUtils.stripControlCodes(message);
         if(!(message.startsWith("NEXT TASK")))
