@@ -1,6 +1,7 @@
 package com.yoursole.HypixelSays.Commands;
 
 import com.yoursole.HypixelSays.Data.GameData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
@@ -33,23 +34,28 @@ public class Enable extends CommandBase {
 
 
             if(GameData.isEnabled) {
-                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bHypixel says mode Enabled"));
-                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bLag mode disabled by default, do /hs lag to toggle"));
-                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bRequeuing if game is guaranteed loss disabled by default, do /hs loss to toggle"));
-                GameData.lagMode = false;
-                GameData.queueOnLoss = false;
+                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bHypixel says mode enabled"));
+                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bUse /hs help for more options"));
             }
             else
                 sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§bHypixel says mode Disabled"));
 
             GameData.tellraw = false;
         }else if(args.length == 1){
-            if(args[0].equalsIgnoreCase("lag")){
+            if(args[0].equalsIgnoreCase("help")){
+                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§e/hs \u00A7§bToggle enabling the whole mod"));
+                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§e/hs help \u00A7§bDisplay this message"));
+                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§e/hs lag \u00A7§bToggle lag mode"));
+                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§e/hs loss \u00A7§bToggle requeuing if you cannot win"));
+                sender.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: \u00A7§e/hs play \u00A7§bJoin Hypixel Says"));
+            }else if(args[0].equalsIgnoreCase("lag")){
                 GameData.lagMode = !GameData.lagMode;
                 sender.addChatMessage(new ChatComponentText((GameData.lagMode)?"\u00A7§4[AUTOREQUE]: \u00A7§bLag mode is enabled":"\u00A7§4[AUTOREQUE]: \u00A7§bLag mode is disabled"));
             }else if(args[0].equalsIgnoreCase("loss")){
                 GameData.queueOnLoss = !GameData.queueOnLoss;
                 sender.addChatMessage(new ChatComponentText((GameData.queueOnLoss)?"\u00A7§4[AUTOREQUE]: \u00A7§bRequeuing on loss is enabled":"\u00A7§4[AUTOREQUE]: \u00A7§bRequeuing on loss is disabled"));
+            }else if(args[0].equalsIgnoreCase("play")){
+                Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
             }
         }
 
@@ -62,7 +68,7 @@ public class Enable extends CommandBase {
 
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-        return new ArrayList<String>(){{add("lag");add("loss");}};
+        return new ArrayList<String>(){{add("help");add("lag");add("loss");add("play");}};
     }
 
 
