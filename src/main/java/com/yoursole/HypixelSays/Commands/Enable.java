@@ -66,6 +66,7 @@ public class Enable extends CommandBase {
             }else if(args[0].equalsIgnoreCase("play")){
                 Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
             }
+        HypixelSays.config.save();
         }
     }
 
