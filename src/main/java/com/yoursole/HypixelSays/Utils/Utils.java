@@ -11,7 +11,7 @@ import java.util.Locale;
 public class Utils {
 
 /*
- if(!GameData.lagMode){
+ if(!HypixelSays.get("Lag Mode")){
                 Thread.sleep(200);
             }else{
                 Thread.sleep(1000);

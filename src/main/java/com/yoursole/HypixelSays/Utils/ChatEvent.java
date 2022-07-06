@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class ChatEvent {
     @SubscribeEvent(receiveCanceled = true)
     public void onChat(ClientChatReceivedEvent e){
-        if(!GameData.isEnabled)
+        if(!HypixelSays.get("Enabled", "Toggle enabling the whole mod"))
             return;
         String message = StringUtils.stripControlCodes(e.message.getFormattedText());
         if(GameData.tellraw){
@@ -199,7 +199,7 @@ public class ChatEvent {
         if (GameData.secondPlaceLeft && !GameData.disconnectedPlayer.equals(GameData.players[1])){
             GameData.secondPlaceLeft = false;
         }
-        if (possiblePoints+GameData.score<40 && GameData.fortyPointGame){
+        if (possiblePoints+GameData.score<40 && HypixelSays.get("fortyPointGame", "Toggle requeuing if you cannot get 40 points")){
             Utils.sendChat("\u00A7§bYou did not get at least 40 points and were automatically requeued");
             Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
             GameData.reset();
@@ -207,7 +207,7 @@ public class ChatEvent {
             Utils.sendChat("\u00A7§bYou won and were automatically requeued");
             Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
             GameData.reset();
-        }else if (possiblePoints+GameData.score<GameData.scores[0] && GameData.queueOnLoss){
+        }else if (possiblePoints+GameData.score<GameData.scores[0] && HypixelSays.get("queueOnLoss", "Toggle requeuing if you cannot win")){
             Utils.sendChat("\u00A7§bYou did not win and were automatically requeued");
             Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
             GameData.reset();

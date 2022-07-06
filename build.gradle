@@ -27,7 +27,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "${mc_version}-${mod_version}"
+version = "${mod_version}"
 group= "com.yoursole.hypixelsays" // https://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "hypixelsays"
 
