@@ -27,14 +27,15 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.0"
+version = "${mod_version}"
 group= "com.yoursole.hypixelsays" // https://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "hypixelsays"
 
 minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"
     runDir = "run"
-    
+    replace "@VERSION@", project.version
+    replaceIn "HypixelSays.java"
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
@@ -71,15 +72,15 @@ dependencies {
 processResources
 {
     // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+    inputs.property "mod_version", project.version
+    inputs.property "mc_version", project.minecraft.version
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
                 
         // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'mod_version':project.version, 'mc_version':project.minecraft.version
     }
         
     // copy everything else, thats not the mcmod.info

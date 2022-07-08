@@ -11,21 +11,28 @@ import java.util.Locale;
 public class Utils {
 
 /*
- if(!GameData.lagMode){
+ if(!HypixelSays.get("Lag Mode")){
                 Thread.sleep(200);
             }else{
                 Thread.sleep(1000);
             }
- */
+ */    
+    public static void sendChat(String message) {
+        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: " + message));
+    }
+    
     public static boolean isOnePointer(String message){
         message = StringUtils.stripControlCodes(message);
         if(!(message.startsWith("NEXT TASK")))
-            return false;
+            return GameData.isOnePointer;
         message = message.toLowerCase();
         if(message.contains("press")){//press the button
             return true;
         }
-        if(message.contains("throw snowball")){//throw snowball at other player
+        if(message.contains("throw eggs")){//throw eggs at other players
+            return true;
+        }
+        if(message.contains("throw snowball")){//throw snowball at other players
             return true;
         }
         if(message.contains("give rud")){//give rudolph his shiny red nose
@@ -50,6 +57,9 @@ public class Utils {
             return true;
         }
         if(message.contains("on the spot")){//jump into the air on the spot
+            return true;
+        }
+        if(message.contains("look at a") && message.contains("block")){//look at a block
             return true;
         }
         if(message.contains("extinguish yourself")){//extinguish yourself

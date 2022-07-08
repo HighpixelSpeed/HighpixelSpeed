@@ -1,6 +1,7 @@
 package com.yoursole.HypixelSays;
 
 import com.yoursole.HypixelSays.Data.GameData;
+import com.yoursole.HypixelSays.HypixelSays;
 import com.yoursole.HypixelSays.Utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,7 +18,7 @@ public class JoinWorld {
     private HashMap<UUID, Long> cooldowns = new HashMap();
     @SubscribeEvent
     public void onJoin(EntityJoinWorldEvent e){
-        if(!GameData.isEnabled)
+        if(!HypixelSays.get("Enabled", "Toggle enabling the whole mod"))
             return;
         int cooldownTime = 2;
         if (cooldowns.containsKey(e.entity.getUniqueID())) {
@@ -35,15 +36,8 @@ public class JoinWorld {
                     GameData.tellraw=true;
                     t.cancel();
                 }
-            }, GameData.lagMode?1000:200);
+            }, HypixelSays.get("Lag Mode", "Toggle lag mode")?1000:200);
         }
         cooldowns.put(e.entity.getUniqueID(),System.currentTimeMillis());
-
-    }
-
-    @SubscribeEvent
-    public void onLeave(FMLNetworkEvent.ClientDisconnectionFromServerEvent e){
-        GameData.isEnabled = false;
-        GameData.reset();
     }
 }
