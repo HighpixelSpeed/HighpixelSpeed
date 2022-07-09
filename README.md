@@ -17,11 +17,6 @@ Launch minecraft with forge 1.8.9.
 First enable the mod in a lobby using `/hs`.
 Join a hypixel says game - the mod should print Joined Hypixel Says, if it prints Not Hypixel Says, then you need to requeue.
 This happens rarely and is due to lag (if this happens more than once you should do /hs lag to enable lag mode).
-
-Do not disable/enable/restart the mod in game.
-This will make the mod not function for that round.
 If you did everything correctly, just play normally and the mod will requeue when you have a 100% chance of winning.
 
 Good Luck!
-
-Please report bugs by DMing Yoursole#0001 on discord 
