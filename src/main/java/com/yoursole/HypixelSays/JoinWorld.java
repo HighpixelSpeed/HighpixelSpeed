@@ -5,9 +5,9 @@ import com.yoursole.HypixelSays.HypixelSays;
 import com.yoursole.HypixelSays.Utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraftforge.event.world.WorldEvent.Load;
 
 import java.util.HashMap;
 import java.util.Timer;
@@ -15,29 +15,23 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 public class JoinWorld {
-    private HashMap<UUID, Long> cooldowns = new HashMap();
+    
+    private boolean worldJustLoaded = false;
     @SubscribeEvent
-    public void onJoin(EntityJoinWorldEvent e){
-        if(!HypixelSays.get("Enabled", "Toggle enabling the whole mod"))
-            return;
-        int cooldownTime = 2;
-        if (cooldowns.containsKey(e.entity.getUniqueID())) {
-            long secondsLeft = cooldowns.get(e.entity.getUniqueID()) / 1000 + cooldownTime - System.currentTimeMillis() / 1000;
-            if (secondsLeft > 0) {
-                return;
+    public void onWorldLoad(Load event) {
+        this.worldJustLoaded = true;
+    }
+    
+    @SubscribeEvent
+    public void onTick(PlayerTickEvent event) {
+        if(this.worldJustLoaded) {
+            this.worldJustLoaded = false;
+            if (GameData.score >= 40){
+            Minecraft.getMinecraft().ingameGUI.displayTitle(String.format("\u00A7aYou won with \u00A76%s \u00A7apoints!", GameData.score), "", 10, 100, 20);
             }
+            GameData.score = 0;
+            Minecraft.getMinecraft().thePlayer.sendChatMessage("/locraw");
+            GameData.tellraw=true;
         }
-        if(e.entity instanceof EntityPlayer && e.entity.getUniqueID() == Minecraft.getMinecraft().thePlayer.getUniqueID()){
-            Timer t = new Timer();
-            t.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    Minecraft.getMinecraft().thePlayer.sendChatMessage("/locraw");
-                    GameData.tellraw=true;
-                    t.cancel();
-                }
-            }, HypixelSays.get("Lag Mode", "Toggle lag mode")?1000:200);
-        }
-        cooldowns.put(e.entity.getUniqueID(),System.currentTimeMillis());
     }
 }
