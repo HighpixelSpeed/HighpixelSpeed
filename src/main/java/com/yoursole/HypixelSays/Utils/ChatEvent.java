@@ -6,7 +6,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.yoursole.HypixelSays.Data.GameData;
 import com.yoursole.HypixelSays.HypixelSays;
+import java.util.*;
+import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiPlayerTabOverlay;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -18,14 +23,11 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.Sys;
 import scala.collection.parallel.ParIterableLike;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
+         
 public class ChatEvent {
     @SubscribeEvent(receiveCanceled = true)
     public void onChat(ClientChatReceivedEvent e){
-        if(!HypixelSays.get("Enabled", "Toggle enabling the whole mod"))
+        if(!HypixelSays.get("Enabled"))
             return;
         String message = StringUtils.stripControlCodes(e.message.getFormattedText());
         if(GameData.tellraw){
@@ -42,16 +44,17 @@ public class ChatEvent {
                 mode = o.get("mode").toString();
             }catch (Exception exx){
                 GameData.inHypixelSays=false;
+                GameData.gameHasStarted = false;
                 GameData.reset();
             }
 
            if(mode.equalsIgnoreCase("\"santa_says\"")||mode.equalsIgnoreCase("\"simon_says\"")){
                GameData.inHypixelSays=true;
-               Utils.sendChat("\u00A7§bJoined Hypixel Says");
+               Utils.sendChat("\u00A7bJoined Hypixel Says");
                GameData.reset();
            }else{
                GameData.inHypixelSays=false;
-               Utils.sendChat("\u00A7§bNot Hypixel Says");
+               GameData.gameHasStarted = false;
                GameData.reset();
            }
             GameData.tellraw=false;
@@ -62,32 +65,21 @@ public class ChatEvent {
                 if(line.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString()) &&line.split(":").length==2 ){
                     String a = StringUtils.stripControlCodes(line);
                     a = a.split(":")[1].replace(" ","");
-                    a = cleanSB(a);
+                    a = clean(a);
                     try {
                         GameData.score = Integer.parseInt(a);
                     }catch (NumberFormatException ex){
-                        //Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("ERROR: Something went wrong"));
                     }
                 }
             }
 
-            String a = sbScore(8);
-            String b = sbScore(7);
-            String c = sbScore(6);
-            GameData.players[0] = sbPlayer(8);
-            GameData.players[1] = sbPlayer(7);
-            GameData.players[2] = sbPlayer(6);
-            try{
-                GameData.scores[0]=Integer.parseInt(a);
-            }catch (NumberFormatException exx){
-            }
-            try{
-                GameData.scores[1]=Integer.parseInt(b);
-            }catch (NumberFormatException exx){
-            }
-            try{
-                GameData.scores[2]=Integer.parseInt(c);
-            }catch (NumberFormatException exx){
+            for (int i = 0; i < 3; i++){
+                String score = sbScore(8 - i);
+                GameData.players[i] = sbPlayer(8 - i);
+                try{
+                    GameData.scores[i]=Integer.parseInt(score);
+                }catch (NumberFormatException exx){
+                }
             }
             
             GameData.isOnePointer = Utils.isOnePointer(message);
@@ -98,7 +90,7 @@ public class ChatEvent {
             }else{
                 GameData.upForGrabs = 1;
             }
-            requeue(true);
+            checkRequeue(true);
             
         }else if (GameData.inHypixelSays && message.contains("finished") && !message.contains(":")){ //all player chats have ":" in them. filtering
             String finishedPlayer = message.split(" finished")[0];                                   //out colons guarantees none will be processed
@@ -113,16 +105,14 @@ public class ChatEvent {
             if (!GameData.isOnePointer && GameData.upForGrabs > 0 ){
                 GameData.upForGrabs--;
             }
-            
         }else if (GameData.inHypixelSays && message.contains("Game ended") && !message.contains(":")){
             GameData.round++;
-            requeue(false);
-            
-        }else if (GameData.inHypixelSays && message.contains("disconnected") && !message.contains(":")){
-            GameData.disconnectedPlayer = message.split(" disconnected")[0];
-            if (GameData.disconnectedPlayer.equals(GameData.players[1])){
-                GameData.secondPlaceLeft = true;
-            }
+            checkRequeue(false);
+        }
+        
+        if (GameData.inHypixelSays && message.startsWith("The game starts in 1 ")) { //avoid checking tab in queue
+            GameData.tabList = new ArrayList<>(Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap());
+            GameData.gameHasStarted = true;
         }
     }
 
@@ -143,7 +133,7 @@ public class ChatEvent {
                 .collect(Collectors.toList());
 
         if (list.size() > 15){
-            scores = Lists.newArrayList(Iterables.skip(list, scores.size() - 15));
+             scores = Lists.newArrayList(Iterables.skip(list, scores.size() - 15));
         }else{
             scores = list;
         }
@@ -156,7 +146,7 @@ public class ChatEvent {
         return lines;
     }
     
-    public static String cleanSB(String scoreboard) {
+    public static String clean(String scoreboard) {
         char[] nvString = StringUtils.stripControlCodes(scoreboard).toCharArray();
         StringBuilder cleaned = new StringBuilder();
 
@@ -174,7 +164,7 @@ public class ChatEvent {
         String line = lines.get(i);
         String a = StringUtils.stripControlCodes(line);
         a = a.split(":")[1].replace(" ","");
-        a = cleanSB(a);
+        a = clean(a);
         return a;
     }
     
@@ -183,11 +173,28 @@ public class ChatEvent {
         String line = lines.get(i);
         String a = StringUtils.stripControlCodes(line);
         a = a.split(":")[0].replace(" ","");
-        a = cleanSB(a);
+        a = clean(a);
         return a;
     }
     
-    static void requeue(boolean isNewTask) {
+    static void checkRequeue(boolean isNewTask) {
+        Collection<NetworkPlayerInfo> tabList = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
+        List<String> playerNames = new ArrayList<String>() {{ tabList.iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
+        List<String> disconnectedPlayers = new ArrayList<String>();
+        if (!tabList.containsAll(GameData.tabList)){
+            Iterator<NetworkPlayerInfo> oldList = GameData.tabList.iterator();
+            oldList.forEachRemaining(playerInfo -> {
+                String playerName = playerInfo.getGameProfile().getName();
+                if (!playerNames.contains(playerName)){
+                    disconnectedPlayers.add(playerName);
+                }
+            });
+        }
+        GameData.secondPlaceLeft = false;
+        if (disconnectedPlayers.contains(GameData.players[1]) && tabList.size() != 1){
+            GameData.secondPlaceLeft = true;
+        }
+        
         int possiblePoints;
         if (GameData.isOnePointer && isNewTask){  //if this is executed on "Game ended," it needs to be counted as 3-pointer,
             int roundsleft = 16 - GameData.round; //in case the current round was a 1-pointer
@@ -196,25 +203,33 @@ public class ChatEvent {
             int roundsleft = 16 - GameData.round;
             possiblePoints = roundsleft*3;
         }
-        if (GameData.secondPlaceLeft && !GameData.disconnectedPlayer.equals(GameData.players[1])){
-            GameData.secondPlaceLeft = false;
-        }
-        if (possiblePoints+GameData.score<40 && HypixelSays.get("Forty Point Mode", "Toggle requeuing if you cannot get 40 points")){
-            Utils.sendChat("\u00A7§bYou did not get at least 40 points and were automatically requeued");
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
-            GameData.reset();
+        
+        if (possiblePoints+GameData.score<40 && HypixelSays.get("Forty Point Mode") && HypixelSays.get("Forty Point Only")){
+            Utils.sendChat("\u00A7bYou could not get at least 40 points and were automatically requeued");
+            requeue();
+        }else if (possiblePoints+GameData.score>=40 && HypixelSays.get("Forty Point Mode")){
+            return;
         }else if (possiblePoints+GameData.scores[1]<GameData.score){
-            Utils.sendChat("\u00A7§bYou won and were automatically requeued");
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
-            GameData.reset();
-        }else if (possiblePoints+GameData.score<GameData.scores[0] && HypixelSays.get("Queue On Loss", "Toggle requeuing if you cannot win")){
-            Utils.sendChat("\u00A7§bYou did not win and were automatically requeued");
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
-            GameData.reset();
+            Utils.sendChat("\u00A7bYou won and were automatically requeued");
+            requeue();
+        }else if (possiblePoints+GameData.score<GameData.scores[0] && HypixelSays.get("Queue On Loss")){
+            Utils.sendChat("\u00A7bYou could not win and were automatically requeued");
+            requeue();
         }else if (possiblePoints+GameData.scores[2]<GameData.score && GameData.secondPlaceLeft){
-            Utils.sendChat("\u00A7§bYou won and were automatically requeued");
-            Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
-            GameData.reset();
+            Utils.sendChat("\u00A7bThe player in 2nd place left, so you won and were automatically requeued");
+            requeue();
         }
+    }
+    
+    static void requeue() {
+        GameData.gameEnded = true;
+        Utils.sendChat(String.format("After " + (GameData.round - 1) + " rounds:"));
+        Utils.sendChat("\u00A7m                         ");
+        for (int line = 8; line >= 6; line--){
+            Utils.sendChat(getSidebarLines().get(line));
+        }
+        Utils.sendChat("\u00A7m                         ");
+        Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
+        GameData.reset();
     }
 }

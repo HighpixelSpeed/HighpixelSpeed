@@ -1,8 +1,8 @@
 [
 {
-  "modid": "hypixelsays",
-  "name": "Hypixel Says",
-  "description": "Hypixel Says requeue mod",
+  "modid": "${mod_id}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
   "version": "${mod_version}",
   "mcversion": "${mc_version}",
   "url": "https://github.com/Yoursole1/HypixelSays",

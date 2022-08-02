@@ -9,16 +9,9 @@ import org.lwjgl.Sys;
 import java.util.Locale;
 
 public class Utils {
-
-/*
- if(!HypixelSays.get("Lag Mode")){
-                Thread.sleep(200);
-            }else{
-                Thread.sleep(1000);
-            }
- */    
+ 
     public static void sendChat(String message) {
-        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7§4[AUTOREQUE]: " + message));
+        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A74[AUTOREQUE]: \u00A7b" + message));
     }
     
     public static boolean isOnePointer(String message){
