@@ -1,7 +1,7 @@
 # Hypixel Says AUTOMATIC REQUEUE MOD:
 
 ### Instructions:
-Download the latest release file from the github.
+Download the [latest release file](https://github.com/Yoursole1/HypixelSays/releases/latest), the one without `sources`.
 Put this in the mods folder (which can be accessed by doing `%appdata%` in search, then opening `.minecraft` and `mods`).
 Launch minecraft with forge 1.8.9.
 
@@ -14,7 +14,7 @@ Launch minecraft with forge 1.8.9.
 `/hs play` This is a shortcut to joining Hypixel Says.
 
 ### Usage:
-First enable the mod in a lobby using `/hs`.
+First enable the mod using `/hs`.
 Join a hypixel says game; the mod should print Joined Hypixel Says.
 If you did everything correctly, just play normally and the mod will requeue when you have a 100% chance of winning.
 
