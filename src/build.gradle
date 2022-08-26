@@ -14,7 +14,33 @@ buildscript {
     }
 }
 
+plugins {
+    id "java"
+    id "com.github.johnrengelman.shadow" version "4.0.4"
+}
+
 apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: "com.github.johnrengelman.shadow"
+
+// This adds support to ("embed", "shade", "include") libraries into our JAR
+shadowJar {
+    configurations = [project.configurations.include]
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+}
+
+shadowJar {
+    project.configurations.shadow.setTransitive(true)
+    configurations = [project.configurations.shadow]
+
+    classifier "" // Replace the default JAR
+}
+
+reobf {
+    shadowJar {} // Reobfuscate the shadowed JAR
+}
+
+jar.dependsOn shadowJar
+jar.enabled = false
 
 compileJava {
     sourceCompatibility = targetCompatibility = "1.8"
@@ -22,6 +48,12 @@ compileJava {
 version = "${mod_version}"
 group= "com.yoursole.hypixelsays" // https://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "hypixelsays"
+
+configurations {
+    // Creates an extra configuration that implements `implementation` to be used later as the configuration that shades libraries
+    include
+    implementation.extendsFrom(include)
+}
 
 repositories {
     maven {
@@ -31,8 +63,17 @@ repositories {
 }
 
 dependencies {
-    implementation "net.hypixel:hypixel-api-core:4.2.1"
-    implementation "net.hypixel:hypixel-api-transport-apache:4.2.1"
+    shadow "net.hypixel:hypixel-api-core:4.2.1"
+    shadow "net.hypixel:hypixel-api-transport-apache:4.2.1"
+}
+
+/**
+ * This simply moves resources so they can be accessed at runtime, Forge is quite weird isn't it
+ */
+sourceSets {
+    main {
+        output.resourcesDir = java.outputDir
+    }
 }
 
 minecraft {

@@ -3,17 +3,13 @@ package com.yoursole.HypixelSays;
 import com.yoursole.HypixelSays.Commands.Enable;
 import com.yoursole.HypixelSays.Utils.ChatEvent;
 import java.util.HashMap;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Mod(modid = HypixelSays.MODID, version = HypixelSays.VERSION, guiFactory = "com.yoursole.HypixelSays.Gui.ModGuiFactoryHandler")
 public class HypixelSays {
@@ -44,8 +40,6 @@ public class HypixelSays {
     
     @EventHandler
     public void init(FMLInitializationEvent e) {
-        //CommandHandler ch = (CommandHandler) MinecraftServer.getServer().getCommandManager();
-        //ch.registerCommand(new Enable());
         MinecraftForge.EVENT_BUS.register(new JoinWorld());
         MinecraftForge.EVENT_BUS.register(new ChatEvent());
         ClientCommandHandler.instance.registerCommand(new Enable());

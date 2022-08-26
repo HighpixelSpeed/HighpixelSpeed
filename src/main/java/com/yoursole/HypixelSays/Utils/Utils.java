@@ -4,9 +4,6 @@ import com.yoursole.HypixelSays.Data.GameData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StringUtils;
-import org.lwjgl.Sys;
-
-import java.util.Locale;
 
 public class Utils {
  

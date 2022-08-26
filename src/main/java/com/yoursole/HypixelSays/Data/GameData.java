@@ -1,7 +1,10 @@
 package com.yoursole.HypixelSays.Data;
 
-import java.util.*;
+import net.hypixel.api.HypixelAPI;
 import net.minecraft.client.network.NetworkPlayerInfo;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class GameData {
 
@@ -11,6 +14,8 @@ public class GameData {
     public static boolean isOnePointer = false;
     public static boolean gameEnded = false;
 
+    public static HypixelAPI hypixelAPI;
+    public static long enteredQueue = 0L;
     public static int round = 1;
     public static int score = 0;
     public static String[] players = new String[3]; //players and

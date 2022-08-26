@@ -6,58 +6,56 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.yoursole.HypixelSays.Data.GameData;
 import com.yoursole.HypixelSays.HypixelSays;
-import java.util.*;
-import java.util.stream.Collectors;
+import net.hypixel.api.HypixelAPI;
+import net.hypixel.api.http.HypixelHttpClient;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.Sys;
-import scala.collection.parallel.ParIterableLike;
+import org.apache.http.client.methods.HttpGet;
+import java.util.*;
+import java.util.stream.Collectors;
          
 public class ChatEvent {
     @SubscribeEvent(receiveCanceled = true)
-    public void onChat(ClientChatReceivedEvent e){
+    public void onChat(ClientChatReceivedEvent event){
         if(!HypixelSays.get("Enabled"))
             return;
-        String message = StringUtils.stripControlCodes(e.message.getFormattedText());
+        String message = StringUtils.stripControlCodes(event.message.getFormattedText());
         if(GameData.tellraw){
-
-            e.setCanceled(true);
-            JsonObject o = new JsonObject();
+            event.setCanceled(true);
+            JsonObject object = new JsonObject();
             try{
-                o = new JsonParser().parse(message).getAsJsonObject();
+                object = new JsonParser().parse(message).getAsJsonObject();
             }catch (Exception ex){
                 return;
             }
-            String mode = "";
+            Utils.sendChat(message);
             try{
-                mode = o.get("mode").toString();
+                if (object.get("mode").toString().equalsIgnoreCase("\"simon_says\"") || object.get("mode").toString().equalsIgnoreCase("\"santa_says\"")){
+                   GameData.inHypixelSays=true;
+                   Utils.sendChat("Joined Hypixel Says");
+                   GameData.reset();
+                }
             }catch (Exception exx){
-                GameData.inHypixelSays=false;
-                GameData.gameHasStarted = false;
-                GameData.reset();
-            }
-
-           if(mode.equalsIgnoreCase("\"santa_says\"")||mode.equalsIgnoreCase("\"simon_says\"")){
-               GameData.inHypixelSays=true;
-               Utils.sendChat("\u00A7bJoined Hypixel Says");
-               GameData.reset();
-           }else{
                GameData.inHypixelSays=false;
                GameData.gameHasStarted = false;
                GameData.reset();
-           }
+            }
             GameData.tellraw=false;
+            
+        }else if (message.startsWith("Your new API key is")) {
+            event.setCanceled(true);
+            GameData.hypixelAPI = new HypixelAPI(new StolenHttpClient(UUID.fromString(message.split("is ")[1])));
+            Collection<NetworkPlayerInfo> tabList = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
+            List<UUID> playerUUIDs = new ArrayList<UUID>() {{ tabList.iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getId())); }};
+            playerUUIDs.iterator().forEachRemaining(PlayerUUID -> Utils.sendChat(GameData.hypixelAPI.getPlayerByUuid(PlayerUUID).toString()));
+            
             
         }else if (GameData.inHypixelSays && message.startsWith("NEXT TASK")) {
             ArrayList<String> lines = (ArrayList<String>) getSidebarLines();
@@ -68,8 +66,7 @@ public class ChatEvent {
                     a = clean(a);
                     try {
                         GameData.score = Integer.parseInt(a);
-                    }catch (NumberFormatException ex){
-                    }
+                    }catch (NumberFormatException ex){}
                 }
             }
 
@@ -78,13 +75,10 @@ public class ChatEvent {
                 GameData.players[i] = sbPlayer(8 - i);
                 try{
                     GameData.scores[i]=Integer.parseInt(score);
-                }catch (NumberFormatException exx){
-                }
+                }catch (NumberFormatException exx){}
             }
             
             GameData.isOnePointer = Utils.isOnePointer(message);
-            
-
             if (!GameData.isOnePointer){
                 GameData.upForGrabs = 3;
             }else{
@@ -108,6 +102,11 @@ public class ChatEvent {
         }else if (GameData.inHypixelSays && message.contains("Game ended") && !message.contains(":")){
             GameData.round++;
             checkRequeue(false);
+        }else if (GameData.inHypixelSays && message.contains(" disconnected ") && !message.contains(":")){
+            String disconnectedPlayer = message.split(" disconnected ")[0];
+            if (disconnectedPlayer.equals(GameData.players[1])){
+                checkRequeue(false);
+            }
         }
         
         if (GameData.inHypixelSays && message.startsWith("The game starts in 1 ")) { //avoid checking tab in queue
@@ -127,10 +126,8 @@ public class ChatEvent {
         if (objective == null) return lines;
 
         Collection<Score> scores = scoreboard.getSortedScores(objective);
-        List<Score> list = scores.stream()
-                .filter(input -> input != null && input.getPlayerName() != null && !input.getPlayerName()
-                        .startsWith("#"))
-                .collect(Collectors.toList());
+        List<Score> list = scores.stream().filter(input ->
+            input != null && input.getPlayerName() != null && !input.getPlayerName().startsWith("#")).collect(Collectors.toList());
 
         if (list.size() > 15){
              scores = Lists.newArrayList(Iterables.skip(list, scores.size() - 15));
@@ -197,11 +194,11 @@ public class ChatEvent {
         
         int possiblePoints;
         if (GameData.isOnePointer && isNewTask){  //if this is executed on "Game ended," it needs to be counted as 3-pointer,
-            int roundsleft = 16 - GameData.round; //in case the current round was a 1-pointer
-            possiblePoints = (roundsleft*3)-2;
+            int roundsLeft = 16 - GameData.round; //in case the current round was a 1-pointer
+            possiblePoints = (roundsLeft*3)-2;
         }else{
-            int roundsleft = 16 - GameData.round;
-            possiblePoints = roundsleft*3;
+            int roundsLeft = 16 - GameData.round;
+            possiblePoints = roundsLeft*3;
         }
         
         if (possiblePoints+GameData.score<40 && HypixelSays.get("Forty Point Mode") && HypixelSays.get("Forty Point Only")){
