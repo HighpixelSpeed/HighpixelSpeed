@@ -1,8 +1,8 @@
 package com.yoursole.HypixelSays;
 
 import com.yoursole.HypixelSays.Commands.Enable;
+import com.yoursole.HypixelSays.Gui.ConfigHandler;
 import com.yoursole.HypixelSays.Utils.ChatEvent;
-import java.util.HashMap;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,25 +17,10 @@ public class HypixelSays {
     public static final String MODID = "hypixelsays";
     public static final String VERSION = "@VERSION@";
     public static Configuration config = null;
-    
-    public static HashMap<String, String> comment = new HashMap<>(); {
-    comment.put("Enabled", "Enable the whole mod");
-    comment.put("Forty Point Mode", "Cancel requeuing if you can get 40 points");
-    comment.put("Forty Point Only", "If Forty Point Mode is true, requeue if you cannot get 40 points");
-    comment.put("Queue On Loss", "Toggle requeuing if you cannot win");
-    }
-    
+
     @EventHandler
     public static void preInit(FMLPreInitializationEvent event) {
-        config = new Configuration(event.getSuggestedConfigurationFile());
-        config.load();
-        
-        config.get(Configuration.CATEGORY_CLIENT, "Enabled", false, comment.get("Enabled"));
-        config.get(Configuration.CATEGORY_CLIENT, "Forty Point Mode", false, comment.get("Forty Point Mode"));
-        config.get(Configuration.CATEGORY_CLIENT, "Forty Point Only", false, comment.get("Forty Point Only"));
-        config.get(Configuration.CATEGORY_CLIENT, "Queue On Loss", false, comment.get("Queue On Loss"));
-        config.save();
-
+        ConfigHandler.init(event.getSuggestedConfigurationFile());
     }
     
     @EventHandler
@@ -44,13 +29,5 @@ public class HypixelSays {
         MinecraftForge.EVENT_BUS.register(new ChatEvent());
         ClientCommandHandler.instance.registerCommand(new Enable());
         mod = this;
-    }
-
-    public static boolean get(String property) {
-        return config.get(Configuration.CATEGORY_CLIENT, property, false, comment.get(property)).getBoolean();
-    }
-    
-    public static void toggle(String property) {
-        config.get(Configuration.CATEGORY_CLIENT, property, false, comment.get(property)).set(!config.get(Configuration.CATEGORY_CLIENT, property, false, comment.get(property)).getBoolean());
     }
 }

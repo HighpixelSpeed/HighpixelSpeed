@@ -1,16 +1,35 @@
 package com.yoursole.HypixelSays.Utils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.yoursole.HypixelSays.Data.GameData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StringUtils;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Scanner;
+
 public class Utils {
- 
+
     public static void sendChat(String message) {
         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A74[AUTOREQUE]: \u00A7b" + message));
     }
-    
+
+    public static JsonObject hypixelApiGet(String GET, String type, String parameter) {
+        JsonObject jsonObject;
+        String response;
+        try {
+            URL url = new URL(String.format("https://api.hypixel.net/%s?key=%s&%s=%s", GET, GameData.apiKey, type, parameter));
+            response = new Scanner(url.openStream(), "UTF-8").useDelimiter("\\A").next();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Utils.sendChat(String.valueOf(new JsonParser().parse(response)));
+        return new JsonObject();
+    }
+
     public static boolean isOnePointer(String message){
         message = StringUtils.stripControlCodes(message);
         if(!(message.startsWith("NEXT TASK")))

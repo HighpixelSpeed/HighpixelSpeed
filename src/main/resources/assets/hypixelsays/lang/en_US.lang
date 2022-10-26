@@ -1,0 +1,13 @@
+#I just added this for a single requirement.
+#I might do the rest of the mod later if I feel so inclined
+
+language.name=English
+language.region=US
+language.code=en_US
+
+gui.config.general=Hypixel Says
+gui.config.general.tooltip=Hypixel Says Configuration Options
+gui.config.autododge=Auto Dodge
+gui.config.autododge.tooltip=Auto Dodge Configuration Options
+gui.config.blacklist=Blacklist
+gui.config.blacklist.tooltip=Blacklist Configuration Options
