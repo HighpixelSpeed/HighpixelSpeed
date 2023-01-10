@@ -24,6 +24,7 @@ public class ChatEvent {
 
     @SubscribeEvent(receiveCanceled = true)
     public void onChat(ClientChatReceivedEvent event){
+
         String message = StringUtils.stripControlCodes(event.message.getFormattedText());
 
         if (message.startsWith("Your new API key is")) {
@@ -84,11 +85,6 @@ public class ChatEvent {
             if (disconnectedPlayer.equals(GameData.players[1])){
                 checkRequeue(false);
             }
-        }
-
-        if (GameData.inHypixelSays && message.startsWith("The game starts in 1 ")) { //avoid checking tab in queue
-            GameData.tabList = new ArrayList<>(Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap());
-            GameData.gameHasStarted = true;
         }
     }
 

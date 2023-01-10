@@ -4,7 +4,6 @@ import com.yoursole.HypixelSays.Commands.Enable;
 import com.yoursole.HypixelSays.Gui.ConfigHandler;
 import com.yoursole.HypixelSays.Utils.ChatEvent;
 import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -16,7 +15,6 @@ public class HypixelSays {
     public static HypixelSays mod;
     public static final String MODID = "hypixelsays";
     public static final String VERSION = "@VERSION@";
-    public static Configuration config = null;
 
     @EventHandler
     public static void preInit(FMLPreInitializationEvent event) {
@@ -27,6 +25,7 @@ public class HypixelSays {
     public void init(FMLInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(new JoinWorld());
         MinecraftForge.EVENT_BUS.register(new ChatEvent());
+        MinecraftForge.EVENT_BUS.register(new ConfigHandler());
         ClientCommandHandler.instance.registerCommand(new Enable());
         mod = this;
     }

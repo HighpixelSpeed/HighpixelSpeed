@@ -1,14 +1,19 @@
 package com.yoursole.HypixelSays.Utils;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.yoursole.HypixelSays.Data.GameData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StringUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Utils {
@@ -17,20 +22,93 @@ public class Utils {
         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A74[AUTOREQUE]: \u00A7b" + message));
     }
 
-    public static JsonObject hypixelApiGet(String GET, String type, String parameter) {
-        JsonObject jsonObject;
+    /**
+     * Sends a request to an http API, with one parameter
+     *
+     * @param domain The API host, such as "api.hypixel.net"
+     * @param get The GET call to make, such as "counts", "resources/games", "leaderboards", etc
+     * @param apiKey Authentication key
+     *
+     * @return The response as json/application
+     */
+    public static JsonObject httpGet(String domain, String apiKey, String get) {
+        return httpGet(domain, apiKey, get, "", "");
+    }
+
+    /**
+     * Sends a GET request to an http API, with one parameter
+     *
+     * @param domain The API host, such as "api.hypixel.net"
+     * @param get The GET call to make, such as "key", "player", "recentgames", etc
+     * @param apiKey Authentication key
+     * @param key The query parameter for the GET, such as "uuid", "player", or "name"
+     * @param value The value of the key
+     *
+     * @return The response as json/application
+     */
+    public static JsonObject httpGet(String domain, String apiKey, String get, String key, String value) {
         String response;
+        String url = String.format("https://%s/%s?key=%s", domain, get, apiKey);
+        if (key.length() > 0){
+            url = url + String.format("&%s=%s", key, value);
+        }
         try {
-            URL url = new URL(String.format("https://api.hypixel.net/%s?key=%s&%s=%s", GET, GameData.apiKey, type, parameter));
-            response = new Scanner(url.openStream(), "UTF-8").useDelimiter("\\A").next();
+            response = new Scanner(new URL(url).openStream(), "UTF-8").useDelimiter("\\A").next();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Utils.sendChat(String.valueOf(new JsonParser().parse(response)));
-        return new JsonObject();
+        return new JsonParser().parse(response).getAsJsonObject();
     }
 
-    public static boolean isOnePointer(String message){
+    /**
+     * Sends a POST request to an http API
+     *
+     * @param domain The API host, such as "api.hypixel.net"
+     * @param payload The POST json array payload to send
+     *
+     * @return The response as json/application
+     */
+    public static JsonElement httpPOST(String domain, JsonArray payload){
+        return httpPOST(domain,"", payload);
+    }
+
+    /**
+     * Sends a POST request to an http API with authentication
+     *
+     * @param domain The API host, such as "api.hypixel.net"
+     * @param payload The POST json array payload to send
+     * @param apiKey Authentication key
+     *
+     * @return The response as json/application
+     */
+    public static JsonElement httpPOST(String domain, String apiKey, JsonArray payload){
+        HttpURLConnection connection;
+        try {
+            byte[] input = payload.toString().getBytes(StandardCharsets.UTF_8);
+            connection = (HttpURLConnection) new URL(domain).openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+            if (!apiKey.equals("")) {
+                connection.setRequestProperty("key", apiKey); //I don't know if this works. Test later
+            }
+            connection.getOutputStream().write(input, 0, input.length);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            return new JsonParser().parse(response.toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean isOnePointer(String message) {
         message = StringUtils.stripControlCodes(message);
         if(!(message.startsWith("NEXT TASK")))
             return GameData.isOnePointer;
@@ -126,8 +204,51 @@ public class Utils {
             return true;
         }
         return false;
-
-
     }
 
+    /**
+     * Adds an element to an array.
+     *
+     * @param oldArray The array to be added to
+     * @param element The object to add to the array
+     *
+     * @return The modified array
+     */
+    public static <T> T[] append(T[] oldArray, T element) {
+        T[] array = Arrays.copyOf(oldArray, oldArray.length + 1);
+        array[array.length - 1] = element;
+        return array;
+    }
+
+    /**
+     * Removes a String from an array
+     *
+     * @param oldArray The array to be added to
+     * @param element The object to remove from the array
+     *
+     * @return The modified array, unless the String is not in the array, in which case the original array
+     *
+     * @author <a href="https://stackoverflow.com/a/12812638">FThompson</a>
+     */
+    public static String[] remove(String[] oldArray, String element) {
+        if (oldArray.length > 0) {
+            int index = -1;
+            for (int i = 0; i < oldArray.length; i++) {
+                if (oldArray[i].equalsIgnoreCase(element)) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index >= 0) {
+                String[] copy = (String[]) Array.newInstance(oldArray.getClass()
+                        .getComponentType(), oldArray.length - 1);
+                if (copy.length > 0) {
+                    System.arraycopy(oldArray, 0, copy, 0, index);
+                    System.arraycopy(oldArray, index + 1, copy, index, copy.length - index);
+                }
+                return copy;
+            }
+        }
+        return oldArray;
+    }
 }

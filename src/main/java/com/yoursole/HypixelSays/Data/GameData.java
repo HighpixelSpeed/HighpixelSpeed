@@ -9,11 +9,9 @@ public class GameData {
 
     public static boolean inHypixelSays = false;
     public static boolean gameHasStarted = false;
-    public static boolean doServerCheck = false; //check if joined server is Hypixel Says
     public static boolean isOnePointer = false;
     public static boolean gameEnded = false;
 
-    public static long enteredQueueTime = 0L;
     public static String apiKey;
     public static int round = 1;
     public static int score = 0;

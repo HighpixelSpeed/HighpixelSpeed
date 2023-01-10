@@ -6,9 +6,9 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.fml.client.IModGuiFactory;
-//import net.minecraftforge.fml.client.config.DummyConfigElement.DummyCategoryElement;
+import net.minecraftforge.fml.client.config.DummyConfigElement.DummyCategoryElement;
 import net.minecraftforge.fml.client.config.GuiConfig;
-//import net.minecraftforge.fml.client.config.GuiConfigEntries;
+import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.client.config.IConfigElement;
 
 import java.util.ArrayList;
@@ -48,13 +48,13 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
         //Main config screen elements
         private static List<IConfigElement> getConfigElements() {
             List<IConfigElement> list = new ArrayList<>(new ConfigElement(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL)).getChildElements());
-            //list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_AUTODODGE, "gui.config.autododge", AutoDodgeEntry.class));
-            //list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_BLACKLIST, "gui.config.blacklist", BlacklistEntry.class));
+            list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_AUTODODGE, "gui.config.autododge", AutoDodgeEntry.class));
+            list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_BLACKLIST, "gui.config.blacklist", BlacklistEntry.class));
             return list;
         }
 
         //Auto dodge config screen
-        /*public static class AutoDodgeEntry extends GuiConfigEntries.CategoryEntry {
+        public static class AutoDodgeEntry extends GuiConfigEntries.CategoryEntry {
 
             public AutoDodgeEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement element) {
                 super(owningScreen, owningEntryList, element);
@@ -97,6 +97,6 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
                         ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).getComment()
                 );
             }
-        }*/
+        }
     }
 }
