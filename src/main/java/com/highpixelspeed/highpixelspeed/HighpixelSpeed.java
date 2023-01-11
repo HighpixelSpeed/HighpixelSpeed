@@ -1,8 +1,9 @@
-package com.yoursole.HypixelSays;
+package com.highpixelspeed.highpixelspeed;
 
-import com.yoursole.HypixelSays.Commands.Enable;
-import com.yoursole.HypixelSays.Gui.ConfigHandler;
-import com.yoursole.HypixelSays.Utils.ChatEvent;
+import com.highpixelspeed.highpixelspeed.commands.HsCommand;
+import com.highpixelspeed.highpixelspeed.utils.JoinWorld;
+import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
+import com.highpixelspeed.highpixelspeed.utils.ChatEvent;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -10,10 +11,10 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = HypixelSays.MODID, version = HypixelSays.VERSION, guiFactory = "com.yoursole.HypixelSays.Gui.ModGuiFactoryHandler")
-public class HypixelSays {
-    public static HypixelSays mod;
-    public static final String MODID = "hypixelsays";
+@Mod(modid = HighpixelSpeed.MODID, version = HighpixelSpeed.VERSION, guiFactory = "com.highpixelspeed.highpixelspeed.config.ModGuiFactoryHandler")
+public class HighpixelSpeed {
+    public static HighpixelSpeed mod;
+    public static final String MODID = "highpixelspeed";
     public static final String VERSION = "@VERSION@";
 
     @EventHandler
@@ -26,7 +27,7 @@ public class HypixelSays {
         MinecraftForge.EVENT_BUS.register(new JoinWorld());
         MinecraftForge.EVENT_BUS.register(new ChatEvent());
         MinecraftForge.EVENT_BUS.register(new ConfigHandler());
-        ClientCommandHandler.instance.registerCommand(new Enable());
+        ClientCommandHandler.instance.registerCommand(new HsCommand());
         mod = this;
     }
 }

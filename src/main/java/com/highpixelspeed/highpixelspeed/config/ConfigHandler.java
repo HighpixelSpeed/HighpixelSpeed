@@ -1,11 +1,8 @@
-package com.yoursole.HypixelSays.Gui;
+package com.highpixelspeed.highpixelspeed.config;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.yoursole.HypixelSays.HypixelSays;
-import com.yoursole.HypixelSays.Utils.Utils;
+import com.google.gson.*;
+import com.highpixelspeed.highpixelspeed.HighpixelSpeed;
+import com.highpixelspeed.highpixelspeed.utils.Utils;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
@@ -65,7 +62,18 @@ public class ConfigHandler {
         propOrder.add("Blacklisted UUIDs");
         config.getCategory(CATEGORY_BLACKLIST).setPropertyOrder(propOrder);
 
-        reloadBlacklist();
+        if (config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted UUIDs").getStringList().length > 0) {
+
+            //Update cached usernames in case they changed
+            config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted UUIDs").set(Arrays.stream(config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted UUIDs").getStringList())
+                    .map(entry -> {
+                        JsonObject newEntry = Utils.httpGet("sessionserver.mojang.com/session/minecraft/profile",
+                                new JsonParser().parse(entry).getAsJsonObject().getAsJsonPrimitive("id").toString().replace("\"", ""));
+                        newEntry.remove("properties");
+                        return newEntry.toString();
+                    }).toArray(String[]::new));
+            reloadBlacklist();
+        }
     }
 
     public static void toggle(String category, String property) {
@@ -82,7 +90,7 @@ public class ConfigHandler {
     //Add usernames in the GUI config to the list of UUIDs
     @SubscribeEvent
     public void onConfigChanged(OnConfigChangedEvent e) {
-        if (e.modID.equals(HypixelSays.MODID) && config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted Players").hasChanged()) {
+        if (e.modID.equals(HighpixelSpeed.MODID) && config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted Players").hasChanged()) {
             String[] names = ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted Players").getStringList();
 
             //Find names not already in the list of UUIDs
@@ -100,12 +108,10 @@ public class ConfigHandler {
                         payload.add(new JsonPrimitive(names[i * 10 + j]));
                     }
                 }
-                System.out.println(payload);
                 //Add the names to the list of UUIDs
                 try {
                     if (payload.size() > 0) {
                         for (JsonElement jsonElement : (JsonArray) Utils.httpPOST("https://api.mojang.com/profiles/minecraft", payload)) {
-                            System.out.println(jsonElement);
                             ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted UUIDs").set(Utils.append(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted UUIDs").getStringList(), jsonElement.toString()));
                         }
                     }

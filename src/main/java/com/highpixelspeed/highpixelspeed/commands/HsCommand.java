@@ -1,11 +1,11 @@
-package com.yoursole.HypixelSays.Commands;
+package com.highpixelspeed.highpixelspeed.commands;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.yoursole.HypixelSays.Gui.ConfigHandler;
-import com.yoursole.HypixelSays.Utils.Utils;
+import com.highpixelspeed.highpixelspeed.utils.Utils;
+import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Enable extends CommandBase {
+public class HsCommand extends CommandBase {
 
     @Override
     public String getCommandName() {
@@ -37,10 +37,10 @@ public class Enable extends CommandBase {
         if(args.length == 0) {
             ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Enabled");
             if(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean()) {
-                Utils.sendChat("Hypixel says mod enabled");
+                Utils.sendChat("Highpixel Speed mod enabled");
                 Utils.sendChat("Use /hs help for options");
             } else {
-                Utils.sendChat("Hypixel says mod disabled");
+                Utils.sendChat("Highpixel Speed mod disabled");
             }
 
         } else if(args.length == 1){

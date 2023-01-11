@@ -1,6 +1,6 @@
-package com.yoursole.HypixelSays.Gui;
+package com.highpixelspeed.highpixelspeed.config;
 
-import com.yoursole.HypixelSays.HypixelSays;
+import com.highpixelspeed.highpixelspeed.HighpixelSpeed;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
@@ -42,7 +42,7 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
     public static class ModGuiConfig extends GuiConfig {
 
         public ModGuiConfig(GuiScreen guiScreen) {
-            super(guiScreen, getConfigElements(), HypixelSays.MODID, false, false, I18n.format("gui.config.general"));
+            super(guiScreen, getConfigElements(), HighpixelSpeed.MODID, false, false, I18n.format("gui.config.general"));
         }
 
         //Main config screen elements

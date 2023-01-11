@@ -15,14 +15,15 @@ apply plugin: "net.minecraftforge.gradle.forge"
 compileJava {
     sourceCompatibility = targetCompatibility = "1.8"
 }
+archivesBaseName = "${mod_id}"
 version = "${mod_version}"
-group= "com.yoursole.hypixelsays" // https://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = "com.highpixelspeed.highpixelspeed"
 
 minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"
     runDir = "run"
     replace "@VERSION@", project.version
-    replaceIn "HypixelSays.java"
+    replaceIn "HighpixelSpeed.java"
     mappings = "stable_22"
 }
 
