@@ -39,6 +39,12 @@ public class ConfigHandler {
         propOrder.add("Leave Empty Queue");
         config.get(CATEGORY_GENERAL, "Queue On Loss", false, "Requeue if you cannot win");
         propOrder.add("Queue On Loss");
+        config.get(CATEGORY_GENERAL, "Hypixel API Key Mode", "Manual" , "If set to manual, put your key in the field below. " +
+                "If set to automatic, you don't have to do anything, but your key will be reset each time you restart the game. " +
+                "If you use your API key for something else, use manual mode", new String[] {"Manual", "Automatic"});
+        propOrder.add("Hypixel API Key Mode");
+        config.get(CATEGORY_GENERAL, "Hypixel API Key", "", "Your Hypixel API key. Beware the fact that it is saved on your computer");
+        propOrder.add("Hypixel API");
         config.getCategory(CATEGORY_GENERAL).setPropertyOrder(propOrder);
 
         propOrder = new ArrayList<>();
@@ -90,6 +96,9 @@ public class ConfigHandler {
     //Add usernames in the GUI config to the list of UUIDs
     @SubscribeEvent
     public void onConfigChanged(OnConfigChangedEvent e) {
+        if (e.modID.equals(HighpixelSpeed.MODID) && config.getCategory(CATEGORY_BLACKLIST).get("Hypixel API Key Mode").hasChanged() && config.getCategory(CATEGORY_BLACKLIST).get("Hypixel API Key Mode").getString().equals("Automatic")) {
+            Utils.sendChat("/api new");
+        }
         if (e.modID.equals(HighpixelSpeed.MODID) && config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted Players").hasChanged()) {
             String[] names = ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted Players").getStringList();
 

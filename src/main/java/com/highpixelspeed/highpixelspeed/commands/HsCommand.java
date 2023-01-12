@@ -4,14 +4,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.highpixelspeed.highpixelspeed.utils.Utils;
 import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
+import com.highpixelspeed.highpixelspeed.data.GameData;
+import com.highpixelspeed.highpixelspeed.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class HsCommand extends CommandBase {
 
         } else if(args.length == 1){
             if(args[0].equalsIgnoreCase("help")) {
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7b\u00A7m                                                                             "));
+                Utils.sendChat("\u00A7m                                                                             ");
                 Utils.sendChat("\u00A7e/hs help \u00A7bDisplay this message\n");
                 Utils.sendChat(String.format("\u00A7%s/hs \u00A7bEnable the whole mod", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean())?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs autododge \u00A7bQueue dodge players with a certain number of wins. Use \u00A7e/hs autododge help\u00A7b for options", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean())?"a":"c"));
@@ -53,15 +53,23 @@ public class HsCommand extends CommandBase {
                 Utils.sendChat(String.format("\u00A7%s/hs empty \u00A7bRequeue if there aren't enough players to start", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Leave Empty Queue").getBoolean())?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs forty \u00A7bCancel requeuing if you can get 40 points", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean())?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs fortyonly \u00A7bIf Forty Point Mode is true, requeue if you cannot get 40 points", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean())?"a":"c"));
+                Utils.sendChat(String.format("\u00A7%s/hs key \u00A7bDisplay Hypixel API key mode. Use \u00A7e/hs key help\u00A7b for options", (Utils.isValidHypixelAPIKey(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key").getString()))?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs loss \u00A7bToggle requeuing if you cannot win", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean())?"a":"c"));
                 Utils.sendChat("\u00A7e/hs play \u00A7bJoin Hypixel Says");
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7b\u00A7m                                                                             "));
+                Utils.sendChat("\u00A7m                                                                             ");
             }
 
             else if(args[0].equalsIgnoreCase("autododge")) {
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_AUTODODGE, "Enabled");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean())?"Auto dodge is enabled":"Auto dodge is disabled");
-                Utils.sendChat("Auto dodge wins threshold: \u00A7e" + ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt());
+                if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) {
+                    Utils.sendChat("Auto dodge wins threshold: \u00A7e" + ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt());
+                    if (GameData.apiKey == null) {
+                        Utils.sendChat(String.format("\n\u00A7bHypixel API Key Mode is set to Manual, but %s",
+                                (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key").getString().equals(""))? "there is no API key set. " : "the key is invalid. ") +
+                                "Please set to automatic (be careful), enter your key in the config or with \u00A7e/hs key <key>\u00A7b, or disable Autododge");
+                    }
+                }
             }else if(args[0].equalsIgnoreCase("blacklist")) {
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_BLACKLIST, "Enabled");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Enabled").getBoolean())?"Blacklist is enabled":"Blacklist is disabled");
@@ -73,7 +81,13 @@ public class HsCommand extends CommandBase {
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean())?"40-point mode is enabled":"40-point mode is disabled");
             } else if(args[0].equalsIgnoreCase("fortyonly")) {
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Forty Point Only");
-                Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean())?"40-point only mode is enabled" + ((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean())?"":", but Forty Point Mode is disabled"):"40-point only mode is disabled");
+                Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean())?"40-point only mode is enabled" +
+                        ((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean())?"":", but Forty Point Mode is disabled"):"40-point only mode is disabled");
+            } else if(args[0].equalsIgnoreCase("key")) {
+                Utils.sendChat("Hypixel API Key Mode is set to " + ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key Mode").getString());
+                if (!Utils.isValidHypixelAPIKey(GameData.apiKey)) {
+                    Utils.sendChat("Use \u00A7e/hs key help \u00A7bfor options");
+                }
             } else if(args[0].equalsIgnoreCase("loss")) {
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Queue On Loss");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean())?"Requeuing on loss is enabled":"Requeuing on loss is disabled");
@@ -84,15 +98,13 @@ public class HsCommand extends CommandBase {
         } else if(args.length == 2){
             if(args[0].equalsIgnoreCase("autododge")) {
                 if(args[1].equalsIgnoreCase("help")) {
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7b\u00A7m                                                                             "));
+                    Utils.sendChat("\u00A7m                                                                             ");
                     Utils.sendChat("\u00A7e/hs autododge help \u00A7bDisplay this message\n");
                     Utils.sendChat(String.format("\u00A7%s/hs autododge \u00A7bEnable auto dodge", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean())?"a":"c"));
                     Utils.sendChat("\u00A7e/hs autododge <wins> \u00A7bSet the number of wins the player must have");
                     Utils.sendChat(String.format("Threshold is currently set to \u00A7e%s", ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt()));
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7b\u00A7m                                                                             "));
-                }
-
-                else {
+                    Utils.sendChat("\u00A7m                                                                             ");
+                } else {
                     try {
                         ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").set(Integer.parseInt(args[1]));
                         Utils.sendChat("Auto dodge wins threshold set to \u00A7e" + ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt());
@@ -102,20 +114,36 @@ public class HsCommand extends CommandBase {
                 }
             } else if(args[0].equalsIgnoreCase("blacklist")) {
                 if(args[1].equalsIgnoreCase("help")) {
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7b\u00A7m                                                                             "));
+                    Utils.sendChat("\u00A7m                                                                             ");
                     Utils.sendChat("\u00A7e/hs blacklist help \u00A7bDisplay this message\n");
-                    Utils.sendChat(String.format("\u00A7%s/hs blacklist \u00A7bEnable blacklist", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean())?"a":"c"));
+                    Utils.sendChat(String.format("\u00A7%s/hs blacklist \u00A7bEnable blacklist", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Enabled").getBoolean())?"a":"c"));
                     Utils.sendChat("\u00A7e/hs blacklist add <username> [username] ... \u00A7bAdd player(s) to your blacklist (limit 10)");
                     Utils.sendChat("\u00A7e/hs blacklist list \u00A7bDisplay all blacklisted players");
                     Utils.sendChat("\u00A7e/hs blacklist remove <username> [username] ... \u00A7bRemove player(s) from your blacklist");
-                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7b\u00A7m                                                                             "));
-                }
-
-                else if(args[1].equalsIgnoreCase("list")) {
+                    Utils.sendChat("\u00A7m                                                                             ");
+                } else if(args[1].equalsIgnoreCase("list")) {
                     Utils.sendChat("Blacklisted players:\n\u00A7b" + String.join(", ", ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted Players").getStringList()));
                 }
+            } else if(args[0].equalsIgnoreCase("key")) {
+                if (args[1].equalsIgnoreCase("help")) {
+                    Utils.sendChat("\u00A7m                                                                             ");
+                    Utils.sendChat("\u00A7e/hs key help \u00A7bDisplay this message\n");
+                    Utils.sendChat("\u00A7e/hs key automatic \u00A7bAutomatically handle your API key. This will reset your key every time you restart the game. If you use your API key for something else, use manual mode");
+                    Utils.sendChat("\u00A7e/hs key manual \u00A7bStore your key in the config. Use \u00A7e/hs key <key>");
+                    Utils.sendChat("\u00A7e/hs key <key> \u00A7bSet your Hypixel API key. Beware the fact that it will be saved on your computer");
+                    Utils.sendChat("\u00A7m                                                                             ");
+                } else if (args[1].equalsIgnoreCase("manual")) {
+                    ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key Mode").set("Manual");
+                    Utils.sendChat("Hypixel API key mode set to Manual");
+                } else if (args[1].equalsIgnoreCase("automatic")) {
+                    ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key Mode").set("Automatic");
+                    Utils.sendChat("Hypixel API key mode set to Automatic");
+                } else if (Utils.isValidHypixelAPIKey(args[1])) {
+                    ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key").set(args[1]);
+                    Utils.sendChat("Hypixel API key successfully changed");
+                }
             }
-        } else if (args.length >= 3) {
+        } else {
             if(args[0].equalsIgnoreCase("blacklist")) {
                 if(args[1].equalsIgnoreCase("add")){
 
@@ -164,15 +192,17 @@ public class HsCommand extends CommandBase {
 
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-       if(args.length == 1){
-            return matchingArgs(args[0], new ArrayList<>(Arrays.asList("autododge", "blacklist", "empty", "forty", "fortyonly", "help", "loss", "play")));
-       } else if(args.length == 2) {
-           if(args[0].equalsIgnoreCase("autododge")) {
-               return matchingArgs(args[1], new ArrayList<>(Arrays.asList("help", "2500")));
-           } else if(args[0].equalsIgnoreCase("blacklist")) {
-               return matchingArgs(args[1], new ArrayList<>(Arrays.asList("help", "add", "list", "remove")));
-           }
-       }
+        if(args.length == 1){
+             return matchingArgs(args[0], new ArrayList<>(Arrays.asList("autododge", "blacklist", "empty", "forty", "fortyonly", "help", "key", "loss", "play")));
+        } else if(args.length == 2) {
+            if(args[0].equalsIgnoreCase("autododge")) {
+                return matchingArgs(args[1], new ArrayList<>(Arrays.asList("help", "2500")));
+            } else if(args[0].equalsIgnoreCase("blacklist")) {
+                 return matchingArgs(args[1], new ArrayList<>(Arrays.asList("help", "add", "list", "remove")));
+            } else if(args[0].equalsIgnoreCase("key")) {
+                return matchingArgs(args[1], new ArrayList<>(Arrays.asList("help", "automatic", "manual")));
+            }
+        }
         return new ArrayList<>();
     }
 

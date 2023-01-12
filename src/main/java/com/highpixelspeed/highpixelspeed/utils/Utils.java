@@ -89,7 +89,7 @@ public class Utils {
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json");
             if (!apiKey.equals("")) {
-                connection.setRequestProperty("key", apiKey); //I don't know if this works. Test later
+                connection.setRequestProperty("key", apiKey); //I don't know if this works. Test later (or never)
             }
             connection.getOutputStream().write(input, 0, input.length);
         } catch (IOException e) {
@@ -105,6 +105,18 @@ public class Utils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static boolean isValidHypixelAPIKey(String apiKey) {
+        HttpURLConnection connection;
+        try {
+            connection = (HttpURLConnection) new URL("https://api.hypixel.net/key?key=" + apiKey).openConnection();
+            connection.setRequestMethod("GET");
+            if (connection.getResponseCode() == 200) {
+                return true;
+            }
+        } catch (IOException ignored) {}
+        return false;
     }
 
     public static boolean isOnePointer(String message) {

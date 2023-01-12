@@ -2,8 +2,8 @@ package com.highpixelspeed.highpixelspeed.utils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.highpixelspeed.highpixelspeed.data.GameData;
 import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
+import com.highpixelspeed.highpixelspeed.data.GameData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StringUtils;
@@ -71,7 +71,16 @@ public class JoinWorld {
             }
             GameData.score = 0;
             if (GameData.apiKey == null) {
-                Minecraft.getMinecraft().thePlayer.sendChatMessage("/api new");
+                String apiKey = ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key").getString();
+                if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key Mode").getString().equals("Automatic")) {
+                    Minecraft.getMinecraft().thePlayer.sendChatMessage("/api new");
+                } else if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean() && Utils.isValidHypixelAPIKey(apiKey)) {
+                    GameData.apiKey = apiKey;
+                    ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key").set(apiKey);
+                } else if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) {
+                    Utils.sendChat(String.format("Hypixel API Key Mode is set to Manual, but %s", (apiKey.equals(""))? "there is no API key set. " : "the key is invalid. ") +
+                            "Please set to automatic (be careful), enter your key in the config or with \u00A7e/hs key <key>\u00A7b, or disable Autododge");
+                }
             }
         }
 
