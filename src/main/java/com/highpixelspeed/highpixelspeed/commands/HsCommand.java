@@ -8,6 +8,7 @@ import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
 import com.highpixelspeed.highpixelspeed.data.GameData;
 import com.highpixelspeed.highpixelspeed.utils.Utils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class HsCommand extends CommandBase {
@@ -55,6 +57,7 @@ public class HsCommand extends CommandBase {
                 Utils.sendChat(String.format("\u00A7%s/hs fortyonly \u00A7bIf Forty Point Mode is true, requeue if you cannot get 40 points", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean())?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs key \u00A7bDisplay Hypixel API key mode. Use \u00A7e/hs key help\u00A7b for options", (Utils.isValidHypixelAPIKey(GameData.apiKey))?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs loss \u00A7bToggle requeuing if you cannot win", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean())?"a":"c"));
+                Utils.sendChat(String.format("\u00A7%s/hs party \u00A7bToggle requeuing if you are in a party", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue With Party").getBoolean())?"a":"c"));
                 Utils.sendChat("\u00A7e/hs play \u00A7bJoin Hypixel Says");
                 Utils.sendChat("\u00A7m                                                                             ");
             }
@@ -91,6 +94,9 @@ public class HsCommand extends CommandBase {
             } else if(args[0].equalsIgnoreCase("loss")) {
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Queue On Loss");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean())?"Requeuing on loss is enabled":"Requeuing on loss is disabled");
+            } else if(args[0].equalsIgnoreCase("party")) {
+                ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Queue With Party");
+                Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue With Party").getBoolean())?"Requeuing with a party is enabled":"Requeuing with a party is disabled");
             } else if(args[0].equalsIgnoreCase("play")) {
                 Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
             }
@@ -192,22 +198,33 @@ public class HsCommand extends CommandBase {
 
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+        Collection<NetworkPlayerInfo> tabList = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
+        ArrayList<String> playerNames = new ArrayList<String>() {{ tabList.iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
+
         if(args.length == 1){
-             return matchingArgs(args[0], new ArrayList<>(Arrays.asList("autododge", "blacklist", "empty", "forty", "fortyonly", "help", "key", "loss", "play")));
+             return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "autododge", "blacklist", "empty", "forty", "fortyonly", "key", "loss", "play", "party")));
         } else if(args.length == 2) {
             if(args[0].equalsIgnoreCase("autododge")) {
-                return matchingArgs(args[1], new ArrayList<>(Arrays.asList("help", "2500")));
+                return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "2500", "10000")));
             } else if(args[0].equalsIgnoreCase("blacklist")) {
-                 return matchingArgs(args[1], new ArrayList<>(Arrays.asList("help", "add", "list", "remove")));
+                return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "add", "list", "remove")));
             } else if(args[0].equalsIgnoreCase("key")) {
-                return matchingArgs(args[1], new ArrayList<>(Arrays.asList("help", "automatic", "manual")));
+                return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "automatic", "manual")));
+            }
+        } else {
+            if(args[0].equalsIgnoreCase("blacklist")) {
+                if (args[1].equalsIgnoreCase("add")) {
+                    return matchingArgs(args, playerNames);
+                } else if(args[1].equalsIgnoreCase("remove")) {
+                    return matchingArgs(args, new ArrayList<>(Arrays.asList(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted Players").getStringList())));
+                }
             }
         }
         return new ArrayList<>();
     }
 
-    public ArrayList<String> matchingArgs(String arg, ArrayList<String> options) {
-        options.removeIf(i -> !i.toLowerCase().startsWith(arg.toLowerCase()));
+    public ArrayList<String> matchingArgs(String[] args, ArrayList<String> options) {
+        options.removeIf(i -> !i.toLowerCase().startsWith(args[args.length-1].toLowerCase()));
         return options;
     }
 }

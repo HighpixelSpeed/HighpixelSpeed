@@ -30,14 +30,23 @@ public class ChatEvent {
         if (message.startsWith("Your new API key is")) {
             event.setCanceled(true);
             GameData.apiKey = message.split("Your new API key is ")[1];
-        }
-
-        if (GameData.sendLeaderboardChat) {
+        } else if (GameData.doPartyCheck > 0) {
+            if (GameData.doPartyCheck == 1) {
+                event.setCanceled(true);
+            }
+            if (message.contains("-----------------")) {
+                event.setCanceled(true);
+                GameData.doPartyCheck--;
+            } else if (message.contains("Party Members (")) {
+                GameData.isInParty = true;
+            }
+        } else if (GameData.sendLeaderboardChat) {
             GameData.chatsRemaining--;
             if (GameData.chatsRemaining == 0) {
                 requeue(false);
             }
         }
+
         if(!ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean() || !GameData.inHypixelSays)
             return;
 
@@ -181,21 +190,23 @@ public class ChatEvent {
             possiblePoints = roundsLeft*3;
         }
         
-        if (possiblePoints+GameData.score<40 && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean()
-                                             && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean()){
-            Utils.sendChat("You could not get at least 40 points and were automatically requeued");
-            requeue(true);
-        } else if (possiblePoints+GameData.score>=40 && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean()){
-            return; //Cancel subsequent requeue attempts
-        } else if (possiblePoints+GameData.scores[1]<GameData.score){
-            Utils.sendChat("You won and were automatically requeued");
-            requeue(true);
-        } else if (possiblePoints+GameData.score<GameData.scores[0] && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean()){
-            Utils.sendChat("You could not win and were automatically requeued");
-            requeue(true);
-        } else if (possiblePoints+GameData.scores[2]<GameData.score && GameData.secondPlaceLeft){
-            Utils.sendChat("The player in 2nd place left, so you won and were automatically requeued");
-            requeue(true);
+        if (!GameData.isInParty || ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue With Party").getBoolean()) {
+            if (possiblePoints+GameData.score<40 && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean()
+                    && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean()){
+                Utils.sendChat("You could not get at least 40 points and were automatically requeued");
+                requeue(true);
+            } else if (possiblePoints+GameData.score>=40 && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean()){
+                return; //Cancel subsequent requeue attempts
+            } else if (possiblePoints+GameData.scores[1]<GameData.score){
+                Utils.sendChat("You won and were automatically requeued");
+                requeue(true);
+            } else if (possiblePoints+GameData.score<GameData.scores[0] && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean()){
+                Utils.sendChat("You could not win and were automatically requeued");
+                requeue(true);
+            } else if (possiblePoints+GameData.scores[2]<GameData.score && GameData.secondPlaceLeft){
+                Utils.sendChat("The player in 2nd place left, so you won and were automatically requeued");
+                requeue(true);
+            }
         }
     }
     

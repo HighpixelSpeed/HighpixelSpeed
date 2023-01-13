@@ -8,9 +8,10 @@ import java.util.Collection;
 public class GameData {
 
     public static boolean inHypixelSays = false;
+    public static boolean isInParty = false;
+    public static int doPartyCheck = 0;
     public static boolean gameHasStarted = false;
     public static boolean isOnePointer = false;
-
     public static String apiKey;
     public static int round = 1;
     public static int score = 0;
@@ -24,6 +25,7 @@ public class GameData {
 
     public static void reset(){
         inHypixelSays = true;
+        isInParty = false;
         gameHasStarted = false;
         round = 1;
         score = 0;

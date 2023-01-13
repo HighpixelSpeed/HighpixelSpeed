@@ -51,6 +51,10 @@ public class JoinWorld {
                     joinYLevel = Minecraft.getMinecraft().thePlayer.posY;
                     GameData.reset();
                     Utils.sendChat("Joined Hypixel Says");
+
+                    //Check for party
+                    GameData.doPartyCheck = 2;
+                    Minecraft.getMinecraft().thePlayer.sendChatMessage("/pl");
                 }
             } catch (NullPointerException ignored) {}
 
@@ -67,6 +71,7 @@ public class JoinWorld {
             if (GameData.score >= 40) {
                 Minecraft.getMinecraft().ingameGUI.displayTitle(String.format("\u00A7aYou won with \u00A76%s \u00A7apoints!", GameData.score), "", 10, 200, 20);
             }
+
             if (GameData.apiKey == null) {
                 String apiKey = ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key").getString();
                 if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key Mode").getString().equals("Automatic")) {
