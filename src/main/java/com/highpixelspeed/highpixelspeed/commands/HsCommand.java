@@ -129,8 +129,8 @@ public class HsCommand extends CommandBase {
                     Utils.sendChat("\u00A7m                                                                             ");
                     Utils.sendChat("\u00A7e/hs key help \u00A7bDisplay this message\n");
                     Utils.sendChat("\u00A7e/hs key automatic \u00A7bAutomatically handle your API key. This will reset your key every time you restart the game. If you use your API key for something else, use manual mode");
-                    Utils.sendChat("\u00A7e/hs key manual \u00A7bStore your key in the config. Use \u00A7e/hs key <key>");
-                    Utils.sendChat("\u00A7e/hs key <key> \u00A7bSet your Hypixel API key. Beware the fact that it will be saved on your computer");
+                    Utils.sendChat("\u00A7e/hs key manual \u00A7bUse your saved API key. Use \u00A7e/hs key <key>");
+                    Utils.sendChat("\u00A7e/hs key <key> \u00A7bSet your Hypixel API key. Be aware that it will be saved on your computer");
                     Utils.sendChat("\u00A7m                                                                             ");
                 } else if (args[1].equalsIgnoreCase("manual")) {
                     ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key Mode").set("Manual");
