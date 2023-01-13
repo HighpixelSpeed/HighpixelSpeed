@@ -48,15 +48,13 @@ public class JoinWorld {
             try {
                 if (doServerCheck && StringUtils.stripControlCodes(Minecraft.getMinecraft().theWorld.getScoreboard().getObjective("PreScoreboard").getDisplayName()).endsWith(" SAYS")) { //Minigame is HYPIXEL SAYS or SANTA SAYS
                     doServerCheck = false;
-                    GameData.inHypixelSays = true;
-                    GameData.gameHasStarted = false;
                     joinYLevel = Minecraft.getMinecraft().thePlayer.posY;
+                    GameData.reset();
                     Utils.sendChat("Joined Hypixel Says");
-
                 }
             } catch (NullPointerException ignored) {}
 
-            if (GameData.inHypixelSays && !event.entity.getName().equals(Minecraft.getMinecraft().thePlayer.getDisplayNameString())) {
+            if (GameData.inHypixelSays && !event.entity.equals(Minecraft.getMinecraft().thePlayer)) {
                 newPlayerUUIDs.add(event.entity.getUniqueID());
             }
         }
@@ -69,7 +67,6 @@ public class JoinWorld {
             if (GameData.score >= 40) {
                 Minecraft.getMinecraft().ingameGUI.displayTitle(String.format("\u00A7aYou won with \u00A76%s \u00A7apoints!", GameData.score), "", 10, 200, 20);
             }
-            GameData.score = 0;
             if (GameData.apiKey == null) {
                 String apiKey = ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key").getString();
                 if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key Mode").getString().equals("Automatic")) {
@@ -134,7 +131,7 @@ public class JoinWorld {
         }
 
         //When the game starts, the player is teleported above the island
-        if (Minecraft.getMinecraft().thePlayer.posY > joinYLevel + 3) {
+        if (!GameData.gameHasStarted && Minecraft.getMinecraft().thePlayer.posY > joinYLevel + 3) {
             GameData.gameHasStarted = true;
         }
     }

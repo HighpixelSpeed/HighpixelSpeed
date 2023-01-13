@@ -32,10 +32,16 @@ public class ChatEvent {
             GameData.apiKey = message.split("Your new API key is ")[1];
         }
 
-        if(!ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean())
+        if (GameData.sendLeaderboardChat) {
+            GameData.chatsRemaining--;
+            if (GameData.chatsRemaining == 0) {
+                requeue(false);
+            }
+        }
+        if(!ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean() || !GameData.inHypixelSays)
             return;
 
-        if (GameData.inHypixelSays && message.startsWith("NEXT TASK")){
+        if (message.startsWith("NEXT TASK")){
             ArrayList<String> lines = (ArrayList<String>) getSidebarLines();
             for(String line : lines){
                 if(line.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString()) &&line.split(":").length==2 ){
@@ -64,7 +70,7 @@ public class ChatEvent {
             }
             checkRequeue(true);
 
-        } else if (GameData.inHypixelSays && message.contains("finished") && !message.contains(":")){ //all player chats have ":" in them. filtering
+        } else if (message.contains("finished") && !message.contains(":")){ //all player chats have ":" in them. filtering
             String finishedPlayer = message.split(" finished")[0];                                   //out colons guarantees none will be processed
             if (finishedPlayer.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString())){
                 GameData.score = GameData.score + GameData.upForGrabs;
@@ -77,14 +83,19 @@ public class ChatEvent {
             if (!GameData.isOnePointer && GameData.upForGrabs > 0 ){
                 GameData.upForGrabs--;
             }
-        } else if (GameData.inHypixelSays && message.contains("Game ended") && !message.contains(":")){
+
+        } else if (message.contains("Game ended") && !message.contains(":")){
             GameData.round++;
             checkRequeue(false);
-        }else if (GameData.inHypixelSays && message.contains(" disconnected ") && !message.contains(":")){
+
+        }else if (message.contains(" disconnected ") && !message.contains(":")){
             String disconnectedPlayer = message.split(" disconnected ")[0];
             if (disconnectedPlayer.equals(GameData.players[1])){
                 checkRequeue(false);
             }
+
+        } else if (message.contains("Your game was boosted") && !message.contains(":")){
+            GameData.sendLeaderboardChat = true;
         }
     }
 
@@ -172,31 +183,29 @@ public class ChatEvent {
         
         if (possiblePoints+GameData.score<40 && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean()
                                              && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean()){
-            Utils.sendChat("\u00A7bYou could not get at least 40 points and were automatically requeued");
-            requeue();
+            Utils.sendChat("You could not get at least 40 points and were automatically requeued");
+            requeue(true);
         } else if (possiblePoints+GameData.score>=40 && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean()){
-            return;
+            return; //Cancel subsequent requeue attempts
         } else if (possiblePoints+GameData.scores[1]<GameData.score){
-            Utils.sendChat("\u00A7bYou won and were automatically requeued");
-            requeue();
+            Utils.sendChat("You won and were automatically requeued");
+            requeue(true);
         } else if (possiblePoints+GameData.score<GameData.scores[0] && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean()){
-            Utils.sendChat("\u00A7bYou could not win and were automatically requeued");
-            requeue();
+            Utils.sendChat("You could not win and were automatically requeued");
+            requeue(true);
         } else if (possiblePoints+GameData.scores[2]<GameData.score && GameData.secondPlaceLeft){
-            Utils.sendChat("\u00A7bThe player in 2nd place left, so you won and were automatically requeued");
-            requeue();
+            Utils.sendChat("The player in 2nd place left, so you won and were automatically requeued");
+            requeue(true);
         }
     }
     
-    static void requeue() {
-        GameData.gameEnded = true;
-        Utils.sendChat(String.format("After %s rounds:", GameData.round - 1));
+    static void requeue(boolean subtractRound) {
+        Utils.sendChat(String.format("After %s rounds:", GameData.round - (subtractRound? 1 : 0)));
         Utils.sendChat("\u00A7m                         ");
         for (int line = 8; line >= 6; line--){
             Utils.sendChat(getSidebarLines().get(line));
         }
         Utils.sendChat("\u00A7m                         ");
         Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
-        GameData.reset();
     }
 }

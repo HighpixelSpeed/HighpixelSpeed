@@ -53,7 +53,7 @@ public class HsCommand extends CommandBase {
                 Utils.sendChat(String.format("\u00A7%s/hs empty \u00A7bRequeue if there aren't enough players to start", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Leave Empty Queue").getBoolean())?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs forty \u00A7bCancel requeuing if you can get 40 points", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean())?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs fortyonly \u00A7bIf Forty Point Mode is true, requeue if you cannot get 40 points", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean())?"a":"c"));
-                Utils.sendChat(String.format("\u00A7%s/hs key \u00A7bDisplay Hypixel API key mode. Use \u00A7e/hs key help\u00A7b for options", (Utils.isValidHypixelAPIKey(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key").getString()))?"a":"c"));
+                Utils.sendChat(String.format("\u00A7%s/hs key \u00A7bDisplay Hypixel API key mode. Use \u00A7e/hs key help\u00A7b for options", (Utils.isValidHypixelAPIKey(GameData.apiKey))?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs loss \u00A7bToggle requeuing if you cannot win", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean())?"a":"c"));
                 Utils.sendChat("\u00A7e/hs play \u00A7bJoin Hypixel Says");
                 Utils.sendChat("\u00A7m                                                                             ");
