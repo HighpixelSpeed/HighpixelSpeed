@@ -20,6 +20,7 @@ These settings can also be changed in the Forge mod config.
 `/hs empty` Toggle requeuing if there are not enough people in your queue to start a game.  
 `/hs help` Show a summary of these commands.  
 `/hs loss` Toggle requeuing if you cannot get enough points and are guaranteed to lose the game.  
+`/hs party` Toggle requeuing normally even if you are in a party  
 `/hs play` Join Hypixel Says.
 
 #### Autododge
