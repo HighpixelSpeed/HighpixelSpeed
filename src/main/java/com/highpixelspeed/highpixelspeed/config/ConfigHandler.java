@@ -61,7 +61,7 @@ public class ConfigHandler {
         propOrder.add("Enabled");
         config.get(CATEGORY_BLACKLIST, "Blacklisted Players", new String[] {}, "Queue dodge these players");
         propOrder.add("Blacklisted Players");
-        config.get(CATEGORY_BLACKLIST, "Blacklisted UUIDs", new String[] {"{\"id\":\"154d46fe8e2c41918243b0c3b2391d2a\",\"name\":\"Aethalops\"}"},
+        config.get(CATEGORY_BLACKLIST, "Blacklisted UUIDs", new String[] {"{\"id\":\"baf9e4c582cd43c4b997f215f77a6dac\",\"name\":\"RIPBiffed\"}"},
         "Actual blacklisted players. \"Blacklisted Players\" is simply a display list to be edited in the config GUI. Each entry is a JSON object with the schema:\n" +
                 "{\n" +
                 "    \"id\": { \"type\": \"string\", \"format\": \"uuid\" },    (dashless UUID)\n" +

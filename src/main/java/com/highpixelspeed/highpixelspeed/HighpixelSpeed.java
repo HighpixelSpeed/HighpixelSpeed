@@ -1,9 +1,9 @@
 package com.highpixelspeed.highpixelspeed;
 
 import com.highpixelspeed.highpixelspeed.commands.HsCommand;
-import com.highpixelspeed.highpixelspeed.utils.JoinWorld;
 import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
 import com.highpixelspeed.highpixelspeed.utils.ChatEvent;
+import com.highpixelspeed.highpixelspeed.utils.JoinWorld;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;

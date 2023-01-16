@@ -11,7 +11,30 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.github.johnrengelman.shadow" version "4.0.4"
+    id "java"
+}
 apply plugin: "net.minecraftforge.gradle.forge"
+
+configurations {
+    shade
+}
+dependencies {
+    compile 'org.apache.httpcomponents:httpasyncclient:4.1.5'
+    shade "org.apache.httpcomponents:httpasyncclient:4.1.5"
+}
+shadowJar {
+    classifier = ''
+    configurations = [project.configurations.shade]
+    relocate 'lib.group', "${project.group}.shadow.lib.group" // ensure repackaged packages have unique names
+}
+reobf {
+    shadowJar { }
+}
+tasks.build.dependsOn reobfShadowJar
+jar.finalizedBy('reobfShadowJar')
+
 compileJava {
     sourceCompatibility = targetCompatibility = "1.8"
 }
@@ -49,10 +72,10 @@ processResources {
 }
 
 //Intellij IDEA fix. Uncomment for building with IDEA
-/*
+
 sourceSets {
     main {
         output.resourcesDir = output.classesDir
     }
 }
-*/
+
