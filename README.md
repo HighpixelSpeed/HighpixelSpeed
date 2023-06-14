@@ -45,12 +45,13 @@ Beware that the players most likely to be on this list are possibly the players 
 #### Hypixel API key
 If you use autododge, Highpixel Speed needs to access the Hypixel API.
 To do this, it needs a valid API key.
-The only way to get the key automatically is to reset it.
+~~The only way to get the key automatically is to reset it.~~
 However, if you use your API key for any other application, resetting it is not an option.
 You may manually enter your key in the config or by command.
-If you don't use your key and don't want to deal with the setup, use automatic mode.  
+~~If you don't use your key and don't want to deal with the setup, use automatic mode.~~  
+Due to Hypixel's screwing with API keys, only Manual Mode works for now. Thanks a lot  
 `/hs key help` Show a summary of these commands.  
-`/hs key automatic` Automatically handle your API key.
-This will reset your key every time you restart the game.  
+~~`/hs key automatic` Automatically handle your API key.
+This will reset your key every time you restart the game.~~  
 `/hs key manual` Use your saved API key.  
 `/hs key <key>` Set your Hypixel API key. Be aware that it will be saved on your computer.  
