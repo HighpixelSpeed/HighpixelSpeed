@@ -20,7 +20,7 @@ public class GameData {
     public static int upForGrabs = 3; //number of points that will be awarded to the next player to finish the task (competitive tasks)
     public static boolean secondPlaceLeft = false;
     public static Collection<NetworkPlayerInfo> tabList = new ArrayList<>();
-    public static int chatsRemaining = 11; //Until sending the leaderboard in chat after game end
+    public static int chatsRemaining = 12; //Until sending the leaderboard in chat after game end
     public static boolean sendLeaderboardChat = false;
 
     public static void reset(){
@@ -33,7 +33,7 @@ public class GameData {
         scores = new int[3];
         secondPlaceLeft = false;
         tabList.clear();
-        chatsRemaining = 11;
+        chatsRemaining = 12;
         sendLeaderboardChat = false;
     }
 }
