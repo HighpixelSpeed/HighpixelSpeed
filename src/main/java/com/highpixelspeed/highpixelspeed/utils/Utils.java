@@ -1,10 +1,18 @@
 package com.highpixelspeed.highpixelspeed.utils;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.highpixelspeed.highpixelspeed.data.GameData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,10 +21,15 @@ import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 public class Utils {
+
+    static CloseableHttpAsyncClient httpClient = HttpAsyncClients.createDefault();
+    public static ArrayList<HttpGet> httpGets = new ArrayList<>();
 
     public static void sendChat(String message) {
         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7b" + message));
@@ -38,7 +51,7 @@ public class Utils {
      * Sends a GET request to an http API, with one parameter
      *
      * @param domain The API host, such as "api.hypixel.net"
-     * @param get The GET call to make, such as "key", "player", "recentgames", etc
+     * @param get The GET call to make, such as "player", "recentgames", etc
      * @param apiKey Authentication key
      * @param key The query parameter for the GET, such as "uuid", "player", or "name"
      * @param value The value of the key
@@ -57,6 +70,43 @@ public class Utils {
             throw new RuntimeException(e);
         }
         return new JsonParser().parse(response).getAsJsonObject();
+    }
+
+    /**
+     * Sends a GET request to an http API, with one parameter. This is not thread-blocking
+     *
+     * @param domain The API host, such as "api.hypixel.net"
+     * @param get The GET call to make, such as "player", "recentgames", etc
+     * @param apiKey Authentication key
+     * @param key The query parameter for the GET, such as "uuid", "player", or "name"
+     * @param value The value of the key
+     * @param consumer A function that is run after the request succeeds. Input a lambda function with one parameter, which is the response as json/application
+     */
+    public static void asyncHttpGet(String domain, String apiKey, String get, String key, String value, Consumer<JsonObject> consumer) {
+        String url = String.format("https://%s/%s?key=%s", domain, get, apiKey);
+        if (key.length() > 0){
+            url = url + String.format("&%s=%s", key, value);
+        }
+        if (!httpClient.isRunning()) httpClient.start();
+        HttpGet request = new HttpGet(url);
+        httpGets.add(request);
+        httpClient.execute(request, new FutureCallback<HttpResponse>() {
+            @Override
+            public void completed(HttpResponse result) {
+                try {
+                    consumer.accept(new JsonParser().parse(new Scanner(result.getEntity().getContent(), "UTF-8").useDelimiter("\\A").next()).getAsJsonObject());
+                    request.abort();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            @Override
+            public void failed(Exception e) {}
+
+            @Override
+            public void cancelled() {}
+
+        });
     }
 
     /**
@@ -97,7 +147,7 @@ public class Utils {
         }
         try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
-            String responseLine = null;
+            String responseLine;
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }

@@ -11,6 +11,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import org.apache.http.client.methods.HttpGet;
 
 import java.util.*;
 
@@ -121,15 +122,17 @@ public class JoinWorld {
             if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) {
                 while (newPlayerUUIDs.size() > 0) {
                     try {
-                        JsonObject playerData = Utils.httpGet("api.hypixel.net", GameData.apiKey, "player", "uuid", newPlayerUUIDs.poll().toString()).getAsJsonObject().getAsJsonObject("player");
-                        String name = playerData.get("displayname").toString().replaceAll("^\"|\"$", "");
-                        int wins = playerData.getAsJsonObject("stats").getAsJsonObject("Arcade").get("wins_simon_says").getAsInt();
-                        List<String> playerNames = new ArrayList<String>() {{ Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap().iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
-                        if (wins >= ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt() && playerNames.contains(name)){
-                            Utils.sendChat(String.format("\u00A7bYou were scared of %s's %s wins", name, wins));
-                            Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
-                            return;
-                        }
+                        Utils.asyncHttpGet("api.hypixel.net", GameData.apiKey, "player", "uuid", newPlayerUUIDs.poll().toString(), response -> {
+                            JsonObject playerData = response.getAsJsonObject("player");
+                            String name = playerData.get("displayname").toString().replaceAll("^\"|\"$", "");
+                            int wins = playerData.getAsJsonObject("stats").getAsJsonObject("Arcade").get("wins_simon_says").getAsInt();
+                            List<String> playerNames = new ArrayList<String>() {{ Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap().iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
+                            if (wins >= ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt() && playerNames.contains(name)){
+                                for (HttpGet httpGet : Utils.httpGets) httpGet.abort();
+                                Utils.sendChat(String.format("\u00A7bYou were scared of %s's %s wins", name, wins));
+                                Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
+                            }
+                        });
                     } catch (Exception ignored) {}
                 }
             }
