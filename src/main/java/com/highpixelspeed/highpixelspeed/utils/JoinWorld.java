@@ -72,19 +72,6 @@ public class JoinWorld {
             if (GameData.score >= 40) {
                 Minecraft.getMinecraft().ingameGUI.displayTitle(String.format("\u00A7aYou won with \u00A76%s \u00A7apoints!", GameData.score), "", 10, 200, 20);
             }
-
-            if (GameData.apiKey == null) {
-                String apiKey = ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key").getString();
-                if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key Mode").getString().equals("Automatic")) {
-                    Minecraft.getMinecraft().thePlayer.sendChatMessage("/api new");
-                } else if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean() && Utils.isValidHypixelAPIKey(apiKey)) {
-                    GameData.apiKey = apiKey;
-                    ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Hypixel API Key").set(apiKey);
-                } else if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) {
-                    Utils.sendChat(String.format("Hypixel API Key Mode is set to Manual, but %s", (apiKey.equals(""))? "there is no API key set. " : "the key is invalid. ") +
-                            "Please set to automatic (be careful), enter your key in the config or with \u00A7e/hs key <key>\u00A7b, or disable Autododge");
-                }
-            }
         }
 
         //Run requeue methods
@@ -122,7 +109,7 @@ public class JoinWorld {
             if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) {
                 while (newPlayerUUIDs.size() > 0) {
                     try {
-                        Utils.asyncHttpGet("api.hypixel.net", GameData.apiKey, "player", "uuid", newPlayerUUIDs.poll().toString(), response -> {
+                        Utils.asyncHttpGet("api.highpixelspeed.com", "", "player", "uuid", Objects.requireNonNull(newPlayerUUIDs.poll()).toString(), response -> {
                             JsonObject playerData = response.getAsJsonObject("player");
                             String name = playerData.get("displayname").toString().replaceAll("^\"|\"$", "");
                             int wins = playerData.getAsJsonObject("stats").getAsJsonObject("Arcade").get("wins_simon_says").getAsInt();

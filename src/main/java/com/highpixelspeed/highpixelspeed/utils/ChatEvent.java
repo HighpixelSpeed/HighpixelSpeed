@@ -27,15 +27,12 @@ public class ChatEvent {
 
         String message = StringUtils.stripControlCodes(event.message.getFormattedText());
 
-        if (message.startsWith("Your new API key is")) {
-            event.setCanceled(true);
-            GameData.apiKey = message.split("Your new API key is ")[1];
-        } else if (GameData.doPartyCheck > 0) {
+        if (GameData.doPartyCheck > 0) { //check for beginning and ending borders of party info
             if (GameData.doPartyCheck == 1) {
-                event.setCanceled(true);
+                event.setCanceled(true); //cancel sending party info after the first border
             }
             if (message.contains("-----------------")) {
-                event.setCanceled(true);
+                event.setCanceled(true); //cancel sending the first border
                 GameData.doPartyCheck--;
             } else if (message.contains("Party Members (")) {
                 GameData.isInParty = true;

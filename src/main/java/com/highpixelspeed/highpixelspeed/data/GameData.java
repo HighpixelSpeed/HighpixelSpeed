@@ -12,7 +12,6 @@ public class GameData {
     public static int doPartyCheck = 0;
     public static boolean gameHasStarted = false;
     public static boolean isOnePointer = false;
-    public static String apiKey;
     public static int round = 1;
     public static int score = 0;
     public static String[] players = new String[3]; //players and

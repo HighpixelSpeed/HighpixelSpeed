@@ -9,8 +9,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 
@@ -28,7 +31,7 @@ import java.util.function.Consumer;
 
 public class Utils {
 
-    static CloseableHttpAsyncClient httpClient = HttpAsyncClients.createDefault();
+    static CloseableHttpAsyncClient httpClient = HttpAsyncClients.custom().setDefaultCookieStore(new BasicCookieStore()).setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build()).build();
     public static ArrayList<HttpGet> httpGets = new ArrayList<>();
 
     public static void sendChat(String message) {
@@ -73,6 +76,18 @@ public class Utils {
     }
 
     /**
+     * Sends a GET request to an http API. This is not thread-blocking
+     *
+     * @param domain The API host, such as "api.hypixel.net"
+     * @param get The GET call to make, such as "resources/games", "boosters", etc
+     * @param apiKey Authentication key
+     * @param consumer A function that is run after the request succeeds. Input a lambda function with one parameter, which is the response as json/application
+     */
+    public static void asyncHttpGet(String domain, String apiKey, String get, Consumer<JsonObject> consumer) {
+        asyncHttpGet(domain, apiKey, get, "", "", consumer);
+    }
+
+    /**
      * Sends a GET request to an http API, with one parameter. This is not thread-blocking
      *
      * @param domain The API host, such as "api.hypixel.net"
@@ -83,14 +98,20 @@ public class Utils {
      * @param consumer A function that is run after the request succeeds. Input a lambda function with one parameter, which is the response as json/application
      */
     public static void asyncHttpGet(String domain, String apiKey, String get, String key, String value, Consumer<JsonObject> consumer) {
-        String url = String.format("https://%s/%s?key=%s", domain, get, apiKey);
+        String url = String.format("http://%s/%s", domain, get);
+        boolean keyExists = false;
+        if (apiKey.length() > 0){
+            keyExists = true;
+            url = url + String.format("?key=%s", apiKey);
+        }
         if (key.length() > 0){
-            url = url + String.format("&%s=%s", key, value);
+            url = url + String.format("%s%s=%s", keyExists?"&":"?",  key, value);
         }
         if (!httpClient.isRunning()) httpClient.start();
         HttpGet request = new HttpGet(url);
         httpGets.add(request);
         httpClient.execute(request, new FutureCallback<HttpResponse>() {
+
             @Override
             public void completed(HttpResponse result) {
                 try {
@@ -100,6 +121,7 @@ public class Utils {
                     throw new RuntimeException(e);
                 }
             }
+
             @Override
             public void failed(Exception e) {}
 
@@ -110,7 +132,7 @@ public class Utils {
     }
 
     /**
-     * Sends a POST request to an http API
+     * Sends a POST request to an http API with authentication
      *
      * @param domain The API host, such as "api.hypixel.net"
      * @param payload The POST json array payload to send
@@ -118,19 +140,6 @@ public class Utils {
      * @return The response as json/application
      */
     public static JsonElement httpPOST(String domain, JsonArray payload){
-        return httpPOST(domain,"", payload);
-    }
-
-    /**
-     * Sends a POST request to an http API with authentication
-     *
-     * @param domain The API host, such as "api.hypixel.net"
-     * @param payload The POST json array payload to send
-     * @param apiKey Authentication key
-     *
-     * @return The response as json/application
-     */
-    public static JsonElement httpPOST(String domain, String apiKey, JsonArray payload){
         HttpURLConnection connection;
         try {
             byte[] input = payload.toString().getBytes(StandardCharsets.UTF_8);
@@ -138,9 +147,6 @@ public class Utils {
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json");
-            if (!apiKey.equals("")) {
-                connection.setRequestProperty("key", apiKey); //I don't know if this works. Test later (or never)
-            }
             connection.getOutputStream().write(input, 0, input.length);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -155,18 +161,6 @@ public class Utils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static boolean isValidHypixelAPIKey(String apiKey) {
-        HttpURLConnection connection;
-        try {
-            connection = (HttpURLConnection) new URL("https://api.hypixel.net/key?key=" + apiKey).openConnection();
-            connection.setRequestMethod("GET");
-            if (connection.getResponseCode() == 200) {
-                return true;
-            }
-        } catch (IOException ignored) {}
-        return false;
     }
 
     public static boolean isOnePointer(String message) {
