@@ -25,9 +25,6 @@ These settings can also be changed in the Forge mod config.
 
 #### Autododge
 Autododge will requeue if any players in your queue are over a certain threshold of wins.
-Due to unfortunate circumstances, when it checks the API for the players' win count, it freezes the game.
-You may experience small frame hitches every five seconds in the queue (not in game, so it doesn't matter) (sorry Aussies).
-The solution to this issue is to not use autododge, you coward.  
 `/hs autododge` Toggle autododge.  
 `/hs autododge help` Show a summary of these commands.  
 `/hs autododge <wins>` Set the number of wins the player must have to scare you.
