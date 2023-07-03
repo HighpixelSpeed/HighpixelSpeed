@@ -1,6 +1,5 @@
 package com.highpixelspeed.highpixelspeed.utils;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
 import com.highpixelspeed.highpixelspeed.data.GameData;
@@ -110,9 +109,8 @@ public class JoinWorld {
                 while (newPlayerUUIDs.size() > 0) {
                     try {
                         Utils.asyncHttpGet("api.highpixelspeed.com", "", "player", "uuid", Objects.requireNonNull(newPlayerUUIDs.poll()).toString(), response -> {
-                            JsonObject playerData = response.getAsJsonObject("player");
-                            String name = playerData.get("displayname").toString().replaceAll("^\"|\"$", "");
-                            int wins = playerData.getAsJsonObject("stats").getAsJsonObject("Arcade").get("wins_simon_says").getAsInt();
+                            String name = response.get("displayname").toString().replaceAll("^\"|\"$", "");
+                            int wins = response.get("wins_simon_says").getAsInt();
                             List<String> playerNames = new ArrayList<String>() {{ Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap().iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
                             if (wins >= ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt() && playerNames.contains(name)){
                                 for (HttpGet httpGet : Utils.httpGets) httpGet.abort();
