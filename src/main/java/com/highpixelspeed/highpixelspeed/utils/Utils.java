@@ -98,7 +98,7 @@ public class Utils {
      * @param consumer A function that is run after the request succeeds. Input a lambda function with one parameter, which is the response as json/application
      */
     public static void asyncHttpGet(String domain, String apiKey, String get, String key, String value, Consumer<JsonObject> consumer) {
-        String url = String.format("http://%s/%s", domain, get);
+        String url = String.format("https://%s/%s", domain, get);
         boolean keyExists = false;
         if (apiKey.length() > 0){
             keyExists = true;
