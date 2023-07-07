@@ -5,10 +5,10 @@
   "description": "${mod_description}",
   "version": "${mod_version}",
   "mcversion": "${mc_version}",
-  "url": "https://github.com/HighpixelSpeed/HighpixelSpeed",
+  "url": "https://www.highpixelspeed.com",
   "updateUrl": "",
   "authorList": ["Yoursole", "Narnianknight"],
-  "credits": "Yoursole, and the Hypixel Says community discord",
+  "credits": "Yoursole and the Hypixel Says community discord",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

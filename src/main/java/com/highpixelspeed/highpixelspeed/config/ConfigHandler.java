@@ -41,6 +41,8 @@ public class ConfigHandler {
         propOrder.add("Queue On Loss");
         config.get(CATEGORY_GENERAL, "Queue With Party", false, "Requeue normally even if you are in a party");
         propOrder.add("Queue With Party");
+        config.get(CATEGORY_GENERAL, "Tag Wins", false, "Show Hypixel Says win count above players' heads");
+        propOrder.add("Tag Wins");
         config.getCategory(CATEGORY_GENERAL).setPropertyOrder(propOrder);
 
         propOrder = new ArrayList<>();
@@ -64,9 +66,12 @@ public class ConfigHandler {
         propOrder.add("Blacklisted UUIDs");
         config.getCategory(CATEGORY_BLACKLIST).setPropertyOrder(propOrder);
 
-        if (config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted UUIDs").getStringList().length > 0) {
+        //Deprecated settings
+        config.getCategory(CATEGORY_GENERAL).remove("Hypixel API Key");
+        config.getCategory(CATEGORY_GENERAL).remove("Hypixel API Key Mode");
 
-            //Update cached usernames in case they changed
+        //Update cached usernames in case they changed
+        if (config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted UUIDs").getStringList().length > 0) {
             config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted UUIDs").set(Arrays.stream(config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted UUIDs").getStringList())
                     .map(entry -> {
                         JsonObject newEntry = Utils.httpGet("sessionserver.mojang.com/session/minecraft/profile",

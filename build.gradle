@@ -80,10 +80,5 @@ processResources {
     }
 }
 //Intellij IDEA fix. Uncomment for building with IDEA
-/*
-sourceSets {
-    main {
-        output.resourcesDir = output.classesDir
-    }
-}
-*/
+
+//sourceSets { main { output.resourcesDir = output.classesDir } }
