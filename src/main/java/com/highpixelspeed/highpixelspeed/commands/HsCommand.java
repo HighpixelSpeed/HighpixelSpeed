@@ -11,6 +11,7 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
 import org.apache.commons.lang3.StringUtils;
 
@@ -91,6 +92,7 @@ public class HsCommand extends CommandBase {
             } else if(args[0].equalsIgnoreCase("tagwins")) { //hs tagwins
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Tag Wins");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean())?"Tagging Wins is enabled":"Tagging Wins is disabled");
+                for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) Utils.tagWins(player);
             }
 
         } else if(args.length == 2){
@@ -106,6 +108,7 @@ public class HsCommand extends CommandBase {
                     try {
                         ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").set(Integer.parseInt(args[1]));
                         Utils.sendChat("Auto dodge wins threshold set to \u00A7e" + ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt());
+                        for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) Utils.tagWins(player);
                     } catch (NumberFormatException e) {
                         Utils.sendChat("Please enter a valid integer");
                     }

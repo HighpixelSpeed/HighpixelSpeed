@@ -4,8 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
 import com.highpixelspeed.highpixelspeed.data.GameData;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StringUtils;
 import org.apache.http.HttpResponse;
@@ -26,6 +28,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
@@ -33,6 +36,8 @@ public class Utils {
 
     static CloseableHttpAsyncClient httpClient = HttpAsyncClients.custom().setDefaultCookieStore(new BasicCookieStore()).setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build()).build();
     public static ArrayList<HttpGet> httpGets = new ArrayList<>();
+    static int myWins;
+    static HashMap<String, Integer> hsWins = new HashMap<>();
 
     public static void sendChat(String message) {
         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7b" + message));
@@ -73,18 +78,6 @@ public class Utils {
             throw new RuntimeException(e);
         }
         return new JsonParser().parse(response).getAsJsonObject();
-    }
-
-    /**
-     * Sends a GET request to an http API. This is not thread-blocking
-     *
-     * @param domain The API host, such as "api.hypixel.net"
-     * @param get The GET call to make, such as "resources/games", "boosters", etc
-     * @param apiKey Authentication key
-     * @param consumer A function that is run after the request succeeds. Input a lambda function with one parameter, which is the response as json/application
-     */
-    public static void asyncHttpGet(String domain, String apiKey, String get, Consumer<JsonObject> consumer) {
-        asyncHttpGet(domain, apiKey, get, "", "", consumer);
     }
 
     /**
@@ -305,5 +298,37 @@ public class Utils {
             }
         }
         return oldArray;
+    }
+
+    public static void tagWins(EntityPlayer player) {
+        if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean()) {
+            try {
+                drawTag(player, hsWins.get(player.getUniqueID().toString()));
+            } catch (NullPointerException e) {
+                try {
+                    asyncHttpGet("www.highpixelspeed.com", "", "player", "uuid", player.getUniqueID().toString(), response -> {
+                        if (response.get("wins_simon_says") != null) {
+                            int wins = response.get("wins_simon_says").getAsInt();
+                            if (player.equals(Minecraft.getMinecraft().thePlayer)) myWins = wins;
+                            hsWins.put(player.getUniqueID().toString(), wins);
+                            drawTag(player, wins);
+                        }
+                    });
+                } catch (Exception ignored) {}
+            }
+        } else {
+            player.getPrefixes().clear();
+        }
+    }
+
+    static void drawTag(EntityPlayer player, int wins) {
+        player.getPrefixes().clear();
+        player.addPrefix(new ChatComponentText(String.format("\u00A7b[%s%s\u00A7b] ",
+                wins == 0 ?
+                        "\u00A77" : ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean() && wins >= ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt() ?
+                        "\u00A76" : wins > myWins ?
+                        "\u00A7a" :
+                        "\u00A7e",
+                wins)));
     }
 }

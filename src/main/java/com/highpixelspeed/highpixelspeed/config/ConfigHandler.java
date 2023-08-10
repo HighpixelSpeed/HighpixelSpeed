@@ -3,7 +3,9 @@ package com.highpixelspeed.highpixelspeed.config;
 import com.google.gson.*;
 import com.highpixelspeed.highpixelspeed.HighpixelSpeed;
 import com.highpixelspeed.highpixelspeed.utils.Utils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -144,6 +146,9 @@ public class ConfigHandler {
                 }
             }
             reloadBlacklist();
+        }
+        if (event.modID.equals(HighpixelSpeed.MODID) && config.getCategory(CATEGORY_GENERAL).get("Tag Wins").hasChanged() || config.getCategory(CATEGORY_AUTODODGE).get("Wins Threshold").hasChanged()) {
+            for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) Utils.tagWins(player);
         }
     }
 }

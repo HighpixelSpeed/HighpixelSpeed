@@ -38,3 +38,11 @@ Beware that the players most likely to be on this list are possibly the players 
 `/hs blacklist add <username> [username] ...` Add one or more players to your blacklist.  
 `/hs blacklist list` Show all the players currently on your blacklist.  
 `/hs blacklist remove <username> [username] ...` Remove one or more players to your blacklist.
+
+#### Tag Wins
+Similar to the mod Levelhead, the Hypixel Says wins of players around you are shown. The color of the number indicates that the player has the following:  
+Gray: 0 wins  
+Yellow: At least one win  
+Green: More wins than you  
+Gold: Enough wins to dodge, if Autododge is enabled  
+`/hs tagwins` Toggle whether to tag players' wins by their names.

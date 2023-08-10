@@ -57,16 +57,10 @@ public class JoinWorld {
                     Minecraft.getMinecraft().thePlayer.sendChatMessage("/pl");
                 }
             } catch (NullPointerException ignored) {}
-
-            if (GameData.inHypixelSays && !event.entity.equals(Minecraft.getMinecraft().thePlayer)) {
-                newPlayerUUIDs.add(event.entity.getUniqueID());
-
-                if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean()) {
-                    try {
-                        Utils.asyncHttpGet("www.highpixelspeed.com", "", "player", "uuid", event.entity.getUniqueID().toString(), response -> {
-                            String wins = response.get("wins_simon_says").toString().replaceAll("^\"|\"$", "");
-                        });
-                    } catch (Exception ignored) {}
+            Utils.tagWins((EntityPlayer) event.entity);
+            if (!event.entity.equals(Minecraft.getMinecraft().thePlayer)) {
+                if (GameData.inHypixelSays) {
+                    newPlayerUUIDs.add(event.entity.getUniqueID());
                 }
             }
         }
