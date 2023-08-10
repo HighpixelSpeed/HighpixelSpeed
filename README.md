@@ -24,7 +24,7 @@ These settings can also be changed in the Forge mod config.
 `/hs play` Join Hypixel Says.
 
 #### Autododge
-Autododge will requeue if any players in your queue are over a certain threshold of wins.
+Autododge will requeue if any players in your queue are over a certain threshold of wins.  
 `/hs autododge` Toggle autododge.  
 `/hs autododge help` Show a summary of these commands.  
 `/hs autododge <wins>` Set the number of wins the player must have to scare you.

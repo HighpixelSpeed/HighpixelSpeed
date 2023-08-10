@@ -35,7 +35,7 @@ public class HsCommand extends CommandBase {
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 
-        if(args.length == 0) {
+        if(args.length == 0) { //hs
             ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Enabled");
             if(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean()) {
                 Utils.sendChat("Highpixel Speed mod enabled");
@@ -45,7 +45,7 @@ public class HsCommand extends CommandBase {
             }
 
         } else if(args.length == 1){
-            if(args[0].equalsIgnoreCase("help")) {
+            if(args[0].equalsIgnoreCase("help")) { //hs help
                 Utils.sendChat("\u00A7m                                                                             ");
                 Utils.sendChat("\u00A7e/hs help \u00A7bDisplay this message\n");
                 Utils.sendChat(String.format("\u00A7%s/hs \u00A7bEnable the whole mod", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean())?"a":"c"));
@@ -61,48 +61,48 @@ public class HsCommand extends CommandBase {
                 Utils.sendChat("\u00A7m                                                                             ");
             }
 
-            else if(args[0].equalsIgnoreCase("autododge")) {
+            else if(args[0].equalsIgnoreCase("autododge")) { //hs autododge
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_AUTODODGE, "Enabled");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean())?"Auto dodge is enabled":"Auto dodge is disabled");
                 if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) {
                     Utils.sendChat("Auto dodge wins threshold: \u00A7e" + ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt());
                 }
-            }else if(args[0].equalsIgnoreCase("blacklist")) {
+            }else if(args[0].equalsIgnoreCase("blacklist")) { //hs blacklist
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_BLACKLIST, "Enabled");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Enabled").getBoolean())?"Blacklist is enabled":"Blacklist is disabled");
-            } else if(args[0].equalsIgnoreCase("empty")) {
+            } else if(args[0].equalsIgnoreCase("empty")) { //hs empty
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Leave Empty Queue");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Leave Empty Queue").getBoolean())?"Leave empty queues is enabled":"Leave empty queues is disabled");
-            } else if(args[0].equalsIgnoreCase("forty")) {
+            } else if(args[0].equalsIgnoreCase("forty")) { //hs forty
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Forty Point Mode");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean())?"40-point mode is enabled":"40-point mode is disabled");
-            } else if(args[0].equalsIgnoreCase("fortyonly")) {
+            } else if(args[0].equalsIgnoreCase("fortyonly")) { //hs fortyonly
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Forty Point Only");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean())?"40-point only mode is enabled" +
                         ((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean())?"":", but Forty Point Mode is disabled"):"40-point only mode is disabled");
-            } else if(args[0].equalsIgnoreCase("loss")) {
+            } else if(args[0].equalsIgnoreCase("loss")) { //hs loss
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Queue On Loss");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean())?"Requeuing on loss is enabled":"Requeuing on loss is disabled");
-            } else if(args[0].equalsIgnoreCase("party")) {
+            } else if(args[0].equalsIgnoreCase("party")) { //hs party
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Queue With Party");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue With Party").getBoolean())?"Requeuing with a party is enabled":"Requeuing with a party is disabled");
-            } else if(args[0].equalsIgnoreCase("play")) {
+            } else if(args[0].equalsIgnoreCase("play")) { //hs play
                 Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
-            } else if(args[0].equalsIgnoreCase("tagwins")) {
+            } else if(args[0].equalsIgnoreCase("tagwins")) { //hs tagwins
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Tag Wins");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean())?"Tagging Wins is enabled":"Tagging Wins is disabled");
             }
 
         } else if(args.length == 2){
             if(args[0].equalsIgnoreCase("autododge")) {
-                if(args[1].equalsIgnoreCase("help")) {
+                if(args[1].equalsIgnoreCase("help")) { //hs autododge help
                     Utils.sendChat("\u00A7m                                                                             ");
                     Utils.sendChat("\u00A7e/hs autododge help \u00A7bDisplay this message\n");
                     Utils.sendChat(String.format("\u00A7%s/hs autododge \u00A7bEnable auto dodge", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean())?"a":"c"));
                     Utils.sendChat("\u00A7e/hs autododge <wins> \u00A7bSet the number of wins the player must have");
                     Utils.sendChat(String.format("Threshold is currently set to \u00A7e%s", ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt()));
                     Utils.sendChat("\u00A7m                                                                             ");
-                } else {
+                } else { //hs autododge <wins>
                     try {
                         ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").set(Integer.parseInt(args[1]));
                         Utils.sendChat("Auto dodge wins threshold set to \u00A7e" + ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt());
@@ -111,7 +111,7 @@ public class HsCommand extends CommandBase {
                     }
                 }
             } else if(args[0].equalsIgnoreCase("blacklist")) {
-                if(args[1].equalsIgnoreCase("help")) {
+                if(args[1].equalsIgnoreCase("help")) { //hs blacklist help
                     Utils.sendChat("\u00A7m                                                                             ");
                     Utils.sendChat("\u00A7e/hs blacklist help \u00A7bDisplay this message\n");
                     Utils.sendChat(String.format("\u00A7%s/hs blacklist \u00A7bEnable blacklist", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Enabled").getBoolean())?"a":"c"));
@@ -119,13 +119,13 @@ public class HsCommand extends CommandBase {
                     Utils.sendChat("\u00A7e/hs blacklist list \u00A7bDisplay all blacklisted players");
                     Utils.sendChat("\u00A7e/hs blacklist remove <username> [username] ... \u00A7bRemove player(s) from your blacklist");
                     Utils.sendChat("\u00A7m                                                                             ");
-                } else if(args[1].equalsIgnoreCase("list")) {
+                } else if(args[1].equalsIgnoreCase("list")) { //hs blacklist list
                     Utils.sendChat("Blacklisted players:\n\u00A7b" + String.join(", ", ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted Players").getStringList()));
                 }
             }
         } else {
             if(args[0].equalsIgnoreCase("blacklist")) {
-                if(args[1].equalsIgnoreCase("add")){
+                if(args[1].equalsIgnoreCase("add")){ //hs blacklist add <username> [username]
 
                     JsonArray payload = new JsonArray();
                     for (int i = 2; i < args.length; i++) {
@@ -143,13 +143,13 @@ public class HsCommand extends CommandBase {
                         Utils.sendChat(String.format("%s%s%s added to your blacklist", (addList.size() > 1)?"Players ":"", String.join(", ", addList).replace("\"", ""), (addList.size() > 1)?" were":" was"));
                     }
 
-                } else if(args[1].equalsIgnoreCase("remove")) {
+                } else if(args[1].equalsIgnoreCase("remove")) { //hs blacklist remove <username> [username]
                     List<String> removeList = new ArrayList<>();
                     for (int i = 2; i < args.length; i++) {
                         String[] uuids = ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted UUIDs").getStringList();
                         for (String uuid : uuids) {
                             if (StringUtils.containsIgnoreCase(uuid,"\"" + args[i] + "\"")) {
-                                removeList.add(new JsonParser().parse(uuid).getAsJsonObject().getAsJsonPrimitive("name").toString().replace("\"", ""));
+                                removeList.add(new JsonParser().parse(uuid).getAsJsonObject().getAsJsonPrimitive("name").getAsString());
                                 ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted UUIDs").set(Utils.remove(uuids, uuid));
                             }
                         }

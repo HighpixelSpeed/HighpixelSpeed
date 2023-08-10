@@ -42,7 +42,7 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
     public static class ModGuiConfig extends GuiConfig {
 
         public ModGuiConfig(GuiScreen guiScreen) {
-            super(guiScreen, getConfigElements(), HighpixelSpeed.MODID, false, false, I18n.format("gui.config.general"));
+            super(guiScreen, getConfigElements(), HighpixelSpeed.MODID, HighpixelSpeed.MODID, false, false, I18n.format("gui.config.general"));
         }
 
         //Main config screen elements

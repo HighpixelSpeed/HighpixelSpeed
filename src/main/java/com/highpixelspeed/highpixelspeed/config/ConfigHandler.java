@@ -48,7 +48,7 @@ public class ConfigHandler {
         propOrder = new ArrayList<>();
         config.get(CATEGORY_AUTODODGE, "Enabled", false, "Queue dodge people with a certain number of wins");
         propOrder.add("Enabled");
-        config.get(CATEGORY_AUTODODGE, "Wins Threshold", 100, "The number of wins the player must have");
+        config.get(CATEGORY_AUTODODGE, "Wins Threshold", 1000, "The number of wins the player must have");
         propOrder.add("Wins Threshold");
         config.getCategory(CATEGORY_AUTODODGE).setPropertyOrder(propOrder);
 
@@ -75,7 +75,7 @@ public class ConfigHandler {
             config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted UUIDs").set(Arrays.stream(config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted UUIDs").getStringList())
                     .map(entry -> {
                         JsonObject newEntry = Utils.httpGet("sessionserver.mojang.com/session/minecraft/profile",
-                                new JsonParser().parse(entry).getAsJsonObject().getAsJsonPrimitive("id").toString().replace("\"", ""));
+                                new JsonParser().parse(entry).getAsJsonObject().getAsJsonPrimitive("id").getAsString());
                         newEntry.remove("properties");
                         return newEntry.toString();
                     }).toArray(String[]::new));
@@ -90,14 +90,14 @@ public class ConfigHandler {
 
     public static void reloadBlacklist() {
         config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted Players").set(Arrays.stream(config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted UUIDs").getStringList())
-            .map(uuid -> new JsonParser().parse(uuid).getAsJsonObject().getAsJsonPrimitive("name").toString().replace("\"", "")).toArray(String[]::new));
+            .map(uuid -> new JsonParser().parse(uuid).getAsJsonObject().getAsJsonPrimitive("name").getAsString()).toArray(String[]::new));
         config.save();
     }
 
     //Add usernames in the GUI config to the list of UUIDs
     @SubscribeEvent
-    public void onConfigChanged(OnConfigChangedEvent e) {
-        if (e.modID.equals(HighpixelSpeed.MODID) && config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted Players").hasChanged()) {
+    public void onConfigChanged(OnConfigChangedEvent event) {
+        if (event.modID.equals(HighpixelSpeed.MODID) && config.getCategory(CATEGORY_BLACKLIST).get("Blacklisted Players").hasChanged()) {
             String[] names = ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted Players").getStringList();
 
             //Find names not already in the list of UUIDs

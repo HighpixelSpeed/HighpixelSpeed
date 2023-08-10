@@ -23,7 +23,7 @@ public class HighpixelSpeed {
     }
     
     @EventHandler
-    public void init(FMLInitializationEvent e) {
+    public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(new JoinWorld());
         MinecraftForge.EVENT_BUS.register(new ChatEvent());
         MinecraftForge.EVENT_BUS.register(new ConfigHandler());

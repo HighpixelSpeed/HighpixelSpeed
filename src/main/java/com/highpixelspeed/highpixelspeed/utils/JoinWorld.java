@@ -117,7 +117,7 @@ public class JoinWorld {
                 while (newPlayerUUIDs.size() > 0) {
                     try {
                         Utils.asyncHttpGet("www.highpixelspeed.com", "", "player", "uuid", Objects.requireNonNull(newPlayerUUIDs.poll()).toString(), response -> {
-                            String name = response.get("displayname").toString().replaceAll("^\"|\"$", "");
+                            String name = response.get("displayname").getAsString();
                             int wins = response.get("wins_simon_says").getAsInt();
                             List<String> playerNames = new ArrayList<String>() {{ Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap().iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
                             if (wins >= ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt() && playerNames.contains(name)){
