@@ -32,7 +32,7 @@ public class GameData {
         scores = new int[3];
         secondPlaceLeft = false;
         tabList.clear();
-        chatsRemaining = 12;
+        chatsRemaining = 5;
         sendLeaderboardChat = false;
     }
 }

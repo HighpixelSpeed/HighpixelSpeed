@@ -44,8 +44,11 @@ public class ChatEvent {
             }
         }
 
-        if(!ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean() || !GameData.inHypixelSays)
-            return;
+        if(!ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean()) return;
+        if(!GameData.inHypixelSays) {
+            if (message.contains("Welcome back to Hypixel Says") && !message.contains(":")) GameData.inHypixelSays = true;
+            else return;
+        }
 
         if (message.startsWith("NEXT TASK")){
             ArrayList<String> lines = (ArrayList<String>) getSidebarLines();
@@ -94,13 +97,13 @@ public class ChatEvent {
             GameData.round++;
             checkRequeue(false);
 
-        }else if (message.contains(" disconnected ") && !message.contains(":")){
+        } else if (message.contains(" disconnected ") && !message.contains(":")){
             String disconnectedPlayer = message.split(" disconnected ")[0];
             if (disconnectedPlayer.equals(GameData.players[1])){
                 checkRequeue(false);
             }
 
-        } else if (message.contains("Your game was boosted") && !message.contains(":")){
+        } else if (message.contains("1st Place - ") && !message.contains(":")){
             GameData.sendLeaderboardChat = true;
         }
     }

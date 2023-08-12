@@ -126,7 +126,7 @@ public class JoinWorld {
         }
 
         //When the game starts, the player is teleported above the island
-        if (!GameData.gameHasStarted && Minecraft.getMinecraft().thePlayer.posY > joinYLevel + 3) {
+        if (GameData.inHypixelSays && !GameData.gameHasStarted && Minecraft.getMinecraft().thePlayer.posY > joinYLevel + 3) {
             GameData.gameHasStarted = true;
         }
     }

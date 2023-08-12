@@ -79,6 +79,6 @@ processResources {
         exclude "mcmod.info"
     }
 }
-//Intellij IDEA fix. Uncomment for building with IDEA
 
+//Intellij IDEA fix. Uncomment for building with IDEA
 //sourceSets { main { output.resourcesDir = output.classesDir } }
