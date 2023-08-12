@@ -25,7 +25,6 @@ public class JoinWorld {
     static Queue<UUID> newPlayerUUIDs;
     static String scaryPlayerName;
     static int scaryPlayerWins;
-    static double joinYLevel; //Santa Says and Hypixel Says are at different Y levels for some reason
 
     @SubscribeEvent
     public void onWorldLoad(Load event) {
@@ -48,20 +47,19 @@ public class JoinWorld {
 
     @SubscribeEvent
     public void onPlayerLogin(EntityJoinWorldEvent event) {
-        if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean() && event.entity instanceof EntityPlayer) {
+        if (event.entity instanceof EntityPlayer) {
+            Utils.tagWins((EntityPlayer) event.entity);
             try {
                 if (doServerCheck && StringUtils.stripControlCodes(Minecraft.getMinecraft().theWorld.getScoreboard().getObjective("PreScoreboard").getDisplayName()).endsWith(" SAYS")) { //Minigame is HYPIXEL SAYS or SANTA SAYS
                     doServerCheck = false;
-                    joinYLevel = Minecraft.getMinecraft().thePlayer.posY;
-                    GameData.reset();
-                    Utils.sendChat("Joined Hypixel Says");
+
+                    if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean()) GameData.initializeGame();
 
                     //Check for party
                     GameData.doPartyCheck = 2;
                     Minecraft.getMinecraft().thePlayer.sendChatMessage("/pl");
                 }
             } catch (NullPointerException ignored) {}
-            Utils.tagWins((EntityPlayer) event.entity);
             if (!event.entity.equals(Minecraft.getMinecraft().thePlayer)) {
                 if (GameData.inHypixelSays) {
                     newPlayerUUIDs.add(event.entity.getUniqueID());
@@ -134,7 +132,7 @@ public class JoinWorld {
         }
 
         //When the game starts, the player is teleported above the island
-        if (GameData.inHypixelSays && !GameData.gameHasStarted && Minecraft.getMinecraft().thePlayer.posY > joinYLevel + 3) {
+        if (GameData.inHypixelSays && !GameData.gameHasStarted && Minecraft.getMinecraft().thePlayer.posY > GameData.joinYLevel + 3) {
             GameData.gameHasStarted = true;
             GameData.addSessionGame = true;
         }

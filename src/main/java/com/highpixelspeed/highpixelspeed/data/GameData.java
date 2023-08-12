@@ -1,5 +1,7 @@
 package com.highpixelspeed.highpixelspeed.data;
 
+import com.highpixelspeed.highpixelspeed.utils.Utils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 
 import java.util.ArrayList;
@@ -30,17 +32,20 @@ public class GameData {
     public static int sessionPoints = 0;
     public static int sessionWinRoundPoints = 0;
     public static boolean addSessionGame = false;
+    public static double joinYLevel;
 
     public static void addSessionWin() {
         sessionWins++;
         sessionWinRoundPoints += score;
     }
 
-    public static void reset(){
+    //Reset scores
+    public static void initializeGame(){
         sessionPoints += score;
         inHypixelSays = true;
-        isInParty = false;
         gameHasStarted = false;
+        isInParty = false;
+        joinYLevel = Minecraft.getMinecraft().thePlayer.posY; //Santa Says and Hypixel Says are at different Y levels for some reason
         round = 1;
         score = 0;
         players = new String[3];
@@ -50,5 +55,6 @@ public class GameData {
         tabList.clear();
         chatsRemaining = 5;
         sendLeaderboardChat = false;
+        Utils.sendChat("Joined Hypixel Says");
     }
 }
