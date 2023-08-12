@@ -43,6 +43,8 @@ public class ConfigHandler {
         propOrder.add("Queue On Loss");
         config.get(CATEGORY_GENERAL, "Queue With Party", false, "Requeue normally even if you are in a party");
         propOrder.add("Queue With Party");
+        config.get(CATEGORY_GENERAL, "Session Stats", false, "Show summary of stats during current play session");
+        propOrder.add("Session Stats");
         config.get(CATEGORY_GENERAL, "Tag Wins", false, "Show Hypixel Says win count above players' heads");
         propOrder.add("Tag Wins");
         config.getCategory(CATEGORY_GENERAL).setPropertyOrder(propOrder);

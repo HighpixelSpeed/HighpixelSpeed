@@ -46,14 +46,17 @@ public class ChatEvent {
 
         if(!ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean()) return;
         if(!GameData.inHypixelSays) {
-            if (message.contains("Welcome back to Hypixel Says") && !message.contains(":")) GameData.inHypixelSays = true;
-            else return;
+            if (message.contains("Welcome back to Hypixel Says") && !message.contains(":")) {
+                GameData.inHypixelSays = true;
+                GameData.addSessionGame = true;
+                GameData.sessionGamesPlayed--;
+            } else return;
         }
 
         if (message.startsWith("NEXT TASK")){
             ArrayList<String> lines = (ArrayList<String>) getSidebarLines();
             for(String line : lines){
-                if(line.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString()) &&line.split(":").length==2 ){
+                if(line.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString()) && line.split(":").length==2 ){
                     String a = StringUtils.stripControlCodes(line);
                     a = a.split(":")[1].replace(" ","");
                     a = clean(a);
@@ -94,8 +97,9 @@ public class ChatEvent {
             }
 
         } else if (message.contains("Game ended") && !message.contains(":")){
-            GameData.round++;
-            checkRequeue(false);
+            GameData.doRoundCheck = true; //Unnecessary except after rejoin...
+            GameData.round++; //Because this is here because it's necessary for...
+            checkRequeue(false); //This
 
         } else if (message.contains(" disconnected ") && !message.contains(":")){
             String disconnectedPlayer = message.split(" disconnected ")[0];
@@ -105,6 +109,9 @@ public class ChatEvent {
 
         } else if (message.contains("1st Place - ") && !message.contains(":")){
             GameData.sendLeaderboardChat = true;
+            if (message.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString())) {
+                GameData.addSessionWin();
+            }
         }
     }
 
@@ -168,6 +175,7 @@ public class ChatEvent {
     }
     
     static void checkRequeue(boolean isNewTask) {
+        Utils.sendChat(String.valueOf(GameData.round));
         Collection<NetworkPlayerInfo> tabList = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
         List<String> playerNames = new ArrayList<String>() {{ tabList.iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
         List<String> disconnectedPlayers = new ArrayList<>();
@@ -199,12 +207,14 @@ public class ChatEvent {
                 return; //Cancel subsequent requeue attempts
             } else if (possiblePoints+GameData.scores[1]<GameData.score){
                 Utils.sendChat("You won and were automatically requeued");
+                GameData.addSessionWin();
                 requeue(true);
             } else if (possiblePoints+GameData.score<GameData.scores[0] && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean()){
                 Utils.sendChat("You could not win and were automatically requeued");
                 requeue(true);
             } else if (possiblePoints+GameData.scores[2]<GameData.score && GameData.secondPlaceLeft){
                 Utils.sendChat("The player in 2nd place left, so you won and were automatically requeued");
+                GameData.addSessionWin();
                 requeue(true);
             }
         }

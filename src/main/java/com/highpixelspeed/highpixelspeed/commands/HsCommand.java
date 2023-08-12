@@ -57,6 +57,7 @@ public class HsCommand extends CommandBase {
                 Utils.sendChat(String.format("\u00A7%s/hs fortyonly \u00A7bIf Forty Point Mode is true, requeue if you cannot get 40 points", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean())?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs loss \u00A7bRequeue if you cannot win", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean())?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs party \u00A7bCancel requeuing if you are in a party", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue With Party").getBoolean())?"a":"c"));
+                Utils.sendChat(String.format("\u00A7%s/hs stats \u00A7bShow summary of stats during current play session", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Session Stats").getBoolean())?"a":"c"));
                 Utils.sendChat(String.format("\u00A7%s/hs tagwins \u00A7bShow Hypixel Says win count above players' heads", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean())?"a":"c"));
                 Utils.sendChat("\u00A7e/hs play \u00A7bJoin Hypixel Says");
                 Utils.sendChat("\u00A7m                                                                             ");
@@ -89,6 +90,10 @@ public class HsCommand extends CommandBase {
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue With Party").getBoolean())?"Requeuing with a party is enabled":"Requeuing with a party is disabled");
             } else if(args[0].equalsIgnoreCase("play")) { //hs play
                 Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
+            } else if(args[0].equalsIgnoreCase("stats")) { //hs stats
+                ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Session Stats");
+                Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Session Stats").getBoolean())?"Session Stats are enabled":"Session Stats are disabled");
+                //Add rendering code
             } else if(args[0].equalsIgnoreCase("tagwins")) { //hs tagwins
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Tag Wins");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean())?"Tagging Wins is enabled":"Tagging Wins is disabled");
@@ -179,7 +184,7 @@ public class HsCommand extends CommandBase {
         ArrayList<String> playerNames = new ArrayList<String>() {{ tabList.iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
 
         if(args.length == 1){
-             return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "autododge", "blacklist", "empty", "forty", "fortyonly", "loss", "play", "party", "tagwins")));
+             return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "autododge", "blacklist", "empty", "forty", "fortyonly", "loss", "play", "party", "stats", "tagwins")));
         } else if(args.length == 2) {
             if(args[0].equalsIgnoreCase("autododge")) {
                 return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "2500", "10000")));

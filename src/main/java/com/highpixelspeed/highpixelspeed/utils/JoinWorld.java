@@ -37,6 +37,10 @@ public class JoinWorld {
         newPlayerUUIDs = new LinkedList<>();
         scaryPlayerName = "";
         scaryPlayerWins = 0;
+        if (GameData.addSessionGame) {
+            GameData.addSessionGame = false;
+            GameData.sessionGamesPlayed++;
+        }
         try {
             ip = Minecraft.getMinecraft().getCurrentServerData().serverIP;
         } catch (Exception ignored){}
@@ -73,6 +77,10 @@ public class JoinWorld {
             if (GameData.score >= 40) {
                 Minecraft.getMinecraft().ingameGUI.displayTitle(String.format("\u00A7aYou won with \u00A76%s \u00A7apoints!", GameData.score), "", 10, 200, 20);
             }
+        }
+        if (GameData.doRoundCheck) {
+            GameData.doRoundCheck = false;
+            GameData.round = Integer.parseInt(StringUtils.stripControlCodes(ChatEvent.getSidebarLines().get(2)).split("Game: ")[1].split("/15")[0]);
         }
 
         //Run requeue methods
@@ -128,6 +136,7 @@ public class JoinWorld {
         //When the game starts, the player is teleported above the island
         if (GameData.inHypixelSays && !GameData.gameHasStarted && Minecraft.getMinecraft().thePlayer.posY > joinYLevel + 3) {
             GameData.gameHasStarted = true;
+            GameData.addSessionGame = true;
         }
     }
 }

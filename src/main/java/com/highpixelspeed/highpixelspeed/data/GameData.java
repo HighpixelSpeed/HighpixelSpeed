@@ -4,6 +4,7 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 public class GameData {
 
@@ -18,11 +19,25 @@ public class GameData {
     public static int[] scores = new int[3];        //their scores on the scoreboard
     public static int upForGrabs = 3; //number of points that will be awarded to the next player to finish the task (competitive tasks)
     public static boolean secondPlaceLeft = false;
+    public static boolean doRoundCheck = false;
     public static Collection<NetworkPlayerInfo> tabList = new ArrayList<>();
     public static int chatsRemaining = 12; //Until sending the leaderboard in chat after game end
     public static boolean sendLeaderboardChat = false;
+    public static HashMap<String, Integer> hsWins = new HashMap<>(); //Cache player win counts
+
+    public static int sessionGamesPlayed = 0;
+    public static int sessionWins = 0;
+    public static int sessionPoints = 0;
+    public static int sessionWinRoundPoints = 0;
+    public static boolean addSessionGame = false;
+
+    public static void addSessionWin() {
+        sessionWins++;
+        sessionWinRoundPoints += score;
+    }
 
     public static void reset(){
+        sessionPoints += score;
         inHypixelSays = true;
         isInParty = false;
         gameHasStarted = false;
@@ -31,6 +46,7 @@ public class GameData {
         players = new String[3];
         scores = new int[3];
         secondPlaceLeft = false;
+        hsWins.clear();
         tabList.clear();
         chatsRemaining = 5;
         sendLeaderboardChat = false;

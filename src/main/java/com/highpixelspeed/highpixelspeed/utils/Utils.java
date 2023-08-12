@@ -28,7 +28,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
@@ -37,7 +36,6 @@ public class Utils {
     static CloseableHttpAsyncClient httpClient = HttpAsyncClients.custom().setDefaultCookieStore(new BasicCookieStore()).setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build()).build();
     public static ArrayList<HttpGet> httpGets = new ArrayList<>();
     static int myWins;
-    static HashMap<String, Integer> hsWins = new HashMap<>();
 
     public static void sendChat(String message) {
         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7b" + message));
@@ -303,14 +301,14 @@ public class Utils {
     public static void tagWins(EntityPlayer player) {
         if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean()) {
             try {
-                drawTag(player, hsWins.get(player.getUniqueID().toString()));
+                drawTag(player, GameData.hsWins.get(player.getUniqueID().toString()));
             } catch (NullPointerException e) {
                 try {
                     asyncHttpGet("www.highpixelspeed.com", "", "player", "uuid", player.getUniqueID().toString(), response -> {
                         if (response.get("wins_simon_says") != null) {
                             int wins = response.get("wins_simon_says").getAsInt();
                             if (player.equals(Minecraft.getMinecraft().thePlayer)) myWins = wins;
-                            hsWins.put(player.getUniqueID().toString(), wins);
+                            GameData.hsWins.put(player.getUniqueID().toString(), wins);
                             drawTag(player, wins);
                         }
                     });
