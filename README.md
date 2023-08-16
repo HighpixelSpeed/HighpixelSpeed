@@ -32,12 +32,21 @@ Autododge will requeue if any players in your queue are over a certain threshold
 #### Blacklist
 You can add players who always beat you to your blacklist, and they will always be avoided in the future.
 Players will stay blacklisted even if they change their usernames.
-Beware that the players most likely to be on this list are possibly the players most likely to be nicked, which blacklist cannot yet handle.  
+Beware that the players most likely to be on this list are possibly the players most likely to be nicked, which blacklist cannot handle.  
 `/hs blacklist` Toggle blacklist.  
 `/hs blacklist help` Show a summary of these commands.  
 `/hs blacklist add <username> [username] ...` Add one or more players to your blacklist.  
 `/hs blacklist list` Show all the players currently on your blacklist.  
 `/hs blacklist remove <username> [username] ...` Remove one or more players to your blacklist.
+
+#### Session Stats
+This keeps track of the games played, wins, win-loss ratio, points, and points per win of your current play session.
+These reset when you restart your game, but you can save them and keep stats from multiple sessions.  
+`/hs stats` Toggle session stats.  
+`/hs stats reset` Set all stats to 0.  
+`/hs stats save` Save your current stats to be used later.  
+`/hs stats load` Retrieve your stats from an earlier session.
+You can either load these stats or add them to your current stats.
 
 #### Tag Wins
 Similar to the mod Levelhead, the Hypixel Says wins of players around you are shown. The color of the number indicates that the player has the following:  
