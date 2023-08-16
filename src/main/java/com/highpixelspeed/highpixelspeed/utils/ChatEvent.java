@@ -175,7 +175,6 @@ public class ChatEvent {
     }
     
     static void checkRequeue(boolean isNewTask) {
-        Utils.sendChat(String.valueOf(GameData.round));
         Collection<NetworkPlayerInfo> tabList = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
         List<String> playerNames = new ArrayList<String>() {{ tabList.iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
         List<String> disconnectedPlayers = new ArrayList<>();

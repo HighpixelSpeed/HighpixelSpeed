@@ -50,6 +50,7 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
             List<IConfigElement> list = new ArrayList<>(new ConfigElement(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL)).getChildElements());
             list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_AUTODODGE, "gui.config.autododge", AutoDodgeEntry.class));
             list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_BLACKLIST, "gui.config.blacklist", BlacklistEntry.class));
+            list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_STATS, "gui.config.stats", StatsEntry.class));
             return list;
         }
 
@@ -95,6 +96,29 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
                         this.configElement.requiresMcRestart() || this.owningScreen.allRequireMcRestart,
                         I18n.format("gui.config.general"),
                         ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).getComment()
+                );
+            }
+        }
+
+        //Session Stats config screen
+        public static class StatsEntry extends GuiConfigEntries.CategoryEntry {
+
+            public StatsEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement element) {
+                super(owningScreen, owningEntryList, element);
+            }
+
+            @Override
+            protected GuiScreen buildChildScreen() {
+
+                return new GuiConfig(
+                        this.owningScreen,
+                        new ArrayList<>((new ConfigElement(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS))).getChildElements()),
+                        this.owningScreen.modID,
+                        ConfigHandler.CATEGORY_STATS,
+                        this.configElement.requiresWorldRestart() || this.owningScreen.allRequireWorldRestart,
+                        this.configElement.requiresMcRestart() || this.owningScreen.allRequireMcRestart,
+                        I18n.format("gui.config.general"),
+                        ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).getComment()
                 );
             }
         }

@@ -26,6 +26,9 @@ import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -67,7 +70,7 @@ public class Utils {
     public static JsonObject httpGet(String domain, String apiKey, String get, String key, String value) {
         String response;
         String url = String.format("https://%s/%s?key=%s", domain, get, apiKey);
-        if (key.length() > 0){
+        if (!key.isEmpty()){
             url = url + String.format("&%s=%s", key, value);
         }
         try {
@@ -91,11 +94,11 @@ public class Utils {
     public static void asyncHttpGet(String domain, String apiKey, String get, String key, String value, Consumer<JsonObject> consumer) {
         String url = String.format("https://%s/%s", domain, get);
         boolean keyExists = false;
-        if (apiKey.length() > 0){
+        if (!apiKey.isEmpty()){
             keyExists = true;
             url = url + String.format("?key=%s", apiKey);
         }
-        if (key.length() > 0){
+        if (!key.isEmpty()){
             url = url + String.format("%s%s=%s", keyExists?"&":"?",  key, value);
         }
         if (!httpClient.isRunning()) httpClient.start();
@@ -328,5 +331,26 @@ public class Utils {
                         "\u00A7a" :
                         "\u00A7e",
                 wins)));
+    }
+
+    public static void redrawSessionStats() {
+        if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean() && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).get("Enabled").getBoolean()) {
+            Minecraft.getMinecraft().ingameGUI.getTabList().setFooter(new ChatComponentText(String.format("\u00A7b\u00A7nHypixel Says Session Stats\n\u00A7r\u00A7bGames Played: \u00A7e%s \u00A7bWins: \u00A7e%s \u00A7bWLR: \u00A7e%s\n\u00A7bPoints: \u00A7e%s \u00A7bPoints per Win: \u00A7e%s",
+                    GameData.sessionGamesPlayed,
+                    GameData.sessionWins,
+                    Math.round((float) GameData.sessionWins / (GameData.sessionGamesPlayed - GameData.sessionWins) * 100f) / 100f,
+                    GameData.sessionPoints + GameData.score,
+                    Math.round((float) GameData.sessionWinRoundPoints / GameData.sessionWins * 100f) / 100f)));
+        } else {
+            Minecraft.getMinecraft().ingameGUI.getTabList().setFooter(new ChatComponentText("\u00A7aRanks, Boosters & More! \u00A7c\u00A7lSTORE.HYPIXEL.NET"));
+        }
+    }
+
+    /**
+     * @param instant Number of seconds since the Unix Epoch
+     * @return Date and time in the format yyyy-MM-dd HH:mm:ss
+     */
+    public static String formatTime(long instant) {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault()).format(Instant.ofEpochSecond(instant));
     }
 }

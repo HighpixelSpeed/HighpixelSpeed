@@ -17,7 +17,7 @@ import java.util.*;
 
 public class JoinWorld {
 
-    static String ip = "";
+    static public String ip = "";
     static boolean worldJustLoaded = false;
     static boolean doServerCheck; //check if joined server is Hypixel Says
     static long timeAtLastCheck;
@@ -28,6 +28,7 @@ public class JoinWorld {
 
     @SubscribeEvent
     public void onWorldLoad(Load event) {
+        ip = "";
         GameData.inHypixelSays = false;
         worldJustLoaded = true;
         doServerCheck = true;
@@ -72,6 +73,7 @@ public class JoinWorld {
     public void onTick(PlayerTickEvent event) {
         if(worldJustLoaded && ip.equals("hypixel.net")) {
             worldJustLoaded = false;
+            Utils.redrawSessionStats();
             if (GameData.score >= 40) {
                 Minecraft.getMinecraft().ingameGUI.displayTitle(String.format("\u00A7aYou won with \u00A76%s \u00A7apoints!", GameData.score), "", 10, 200, 20);
             }
@@ -100,7 +102,7 @@ public class JoinWorld {
             //Blacklist
             if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Enabled").getBoolean()) {
                 Queue<UUID> newPlayerUUIDsCopy = new LinkedList<>(newPlayerUUIDs); //Poll removes UUIDs from the queue, and autodoge needs newPlayerUUIDs, so a copy is needed
-                while (newPlayerUUIDsCopy.size() > 0) {
+                while (!newPlayerUUIDsCopy.isEmpty()) {
                     String newPlayerUUID = newPlayerUUIDsCopy.poll().toString().replace("-","");
                     for (String uuid : ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted UUIDs").getStringList()) {
                         if (org.apache.commons.lang3.StringUtils.containsIgnoreCase(uuid, newPlayerUUID)) {
@@ -114,7 +116,7 @@ public class JoinWorld {
 
             //Autododge
             if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) {
-                while (newPlayerUUIDs.size() > 0) {
+                while (!newPlayerUUIDs.isEmpty()) {
                     try {
                         Utils.asyncHttpGet("www.highpixelspeed.com", "", "player", "uuid", Objects.requireNonNull(newPlayerUUIDs.poll()).toString(), response -> {
                             String name = response.get("displayname").getAsString();

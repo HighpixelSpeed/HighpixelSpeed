@@ -11,3 +11,5 @@ gui.config.autododge=Auto Dodge
 gui.config.autododge.tooltip=Auto Dodge Configuration Options
 gui.config.blacklist=Blacklist
 gui.config.blacklist.tooltip=Blacklist Configuration Options
+gui.config.stats=Session Stats
+gui.config.stats.tooltip=Session Stats Configuration Options

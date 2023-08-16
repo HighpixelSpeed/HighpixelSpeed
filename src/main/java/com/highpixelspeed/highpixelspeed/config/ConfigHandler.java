@@ -23,12 +23,14 @@ public class ConfigHandler {
     public static final String CATEGORY_GENERAL = Configuration.CATEGORY_GENERAL;
     public static final String CATEGORY_AUTODODGE = "autododge";
     public static final String CATEGORY_BLACKLIST = "blacklist";
+    public static final String CATEGORY_STATS = "stats";
 
     public static void init(File file) {
         config = new Configuration(file);
         config.addCustomCategoryComment(CATEGORY_GENERAL, I18n.format("gui.config.general.tooltip"));
         config.addCustomCategoryComment(CATEGORY_AUTODODGE, I18n.format("gui.config.autododge.tooltip"));
         config.addCustomCategoryComment(CATEGORY_BLACKLIST, I18n.format("gui.config.blacklist.tooltip"));
+        config.addCustomCategoryComment(CATEGORY_STATS, I18n.format("gui.config.stats.tooltip"));
 
         List<String> propOrder = new ArrayList<>();
         config.get(CATEGORY_GENERAL, "Enabled", false, "Enable the whole mod");
@@ -43,8 +45,6 @@ public class ConfigHandler {
         propOrder.add("Queue On Loss");
         config.get(CATEGORY_GENERAL, "Queue With Party", false, "Requeue normally even if you are in a party");
         propOrder.add("Queue With Party");
-        config.get(CATEGORY_GENERAL, "Session Stats", false, "Show summary of stats during current play session");
-        propOrder.add("Session Stats");
         config.get(CATEGORY_GENERAL, "Tag Wins", false, "Show Hypixel Says win count above players' heads");
         propOrder.add("Tag Wins");
         config.getCategory(CATEGORY_GENERAL).setPropertyOrder(propOrder);
@@ -69,6 +69,21 @@ public class ConfigHandler {
                 "}").setShowInGui(false);
         propOrder.add("Blacklisted UUIDs");
         config.getCategory(CATEGORY_BLACKLIST).setPropertyOrder(propOrder);
+
+        propOrder = new ArrayList<>();
+        config.get(CATEGORY_STATS, "Enabled", false, "Show summary of stats during play session");
+        propOrder.add("Enabled");
+        config.get(CATEGORY_STATS, "Games Played", 0, "The number of games played during saved play session").setShowInGui(false);
+        propOrder.add("Games Played");
+        config.get(CATEGORY_STATS, "Wins", 0, "The number of wins during saved play session").setShowInGui(false);
+        propOrder.add("Wins");
+        config.get(CATEGORY_STATS, "Points", 0, "The number of points earned during saved play session").setShowInGui(false);
+        propOrder.add("Points");
+        config.get(CATEGORY_STATS, "Win Round Points", 0, "The number points earned in rounds won by the player during saved play session").setShowInGui(false);
+        propOrder.add("Win Round Points");
+        config.get(CATEGORY_STATS, "Save Date", 0, "The date and time of the saved session stats").setShowInGui(false);
+        propOrder.add("Save Date");
+        config.getCategory(CATEGORY_STATS).setPropertyOrder(propOrder);
 
         //Deprecated settings
         config.getCategory(CATEGORY_GENERAL).remove("Hypixel API Key");
@@ -151,6 +166,9 @@ public class ConfigHandler {
         }
         if (event.modID.equals(HighpixelSpeed.MODID) && config.getCategory(CATEGORY_GENERAL).get("Tag Wins").hasChanged() || config.getCategory(CATEGORY_AUTODODGE).get("Wins Threshold").hasChanged()) {
             for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) Utils.tagWins(player);
+        }
+        if (event.modID.equals(HighpixelSpeed.MODID) && config.getCategory(CATEGORY_GENERAL).get("Enabled").hasChanged() || config.getCategory(CATEGORY_STATS).get("Enabled").hasChanged()) {
+            Utils.redrawSessionStats();
         }
     }
 }
