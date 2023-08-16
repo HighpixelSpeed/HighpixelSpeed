@@ -41,6 +41,7 @@ Beware that the players most likely to be on this list are possibly the players 
 
 #### Session Stats
 This keeps track of the games played, wins, win-loss ratio, points, and points per win of your current play session.
+Find it by opening the tab menu.
 These reset when you restart your game, but you can save them and keep stats from multiple sessions.  
 `/hs stats` Toggle session stats.  
 `/hs stats reset` Set all stats to 0.  
