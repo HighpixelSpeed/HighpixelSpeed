@@ -1,5 +1,6 @@
 package com.highpixelspeed.highpixelspeed.data;
 
+import com.highpixelspeed.highpixelspeed.feature.Speedrun;
 import com.highpixelspeed.highpixelspeed.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -17,15 +18,15 @@ public class GameData {
     public static boolean isOnePointer = false;
     public static int round = 1;
     public static int score = 0;
-    public static String[] players = new String[3]; //players and
-    public static int[] scores = new int[3];        //their scores on the scoreboard
-    public static int upForGrabs = 3; //number of points that will be awarded to the next player to finish the task (competitive tasks)
+    public static String[] players = new String[3]; // Players and
+    public static int[] scores = new int[3];        // Their scores on the scoreboard
+    public static int upForGrabs = 3; // Number of points that will be awarded to the next player to finish the task (competitive tasks)
     public static boolean secondPlaceLeft = false;
     public static boolean doRoundCheck = false;
     public static Collection<NetworkPlayerInfo> tabList = new ArrayList<>();
-    public static int chatsRemaining = 12; //Until sending the leaderboard in chat after game end
+    public static int chatsRemaining = 12; // Until sending the leaderboard in chat after game end
     public static boolean sendLeaderboardChat = false;
-    public static HashMap<String, Integer> hsWins = new HashMap<>(); //Cache player win counts
+    public static HashMap<String, Integer> hsWins = new HashMap<>(); // Cache player win counts
 
     public static int sessionGamesPlayed = 0;
     public static int sessionWins = 0;
@@ -39,13 +40,13 @@ public class GameData {
         sessionWinRoundPoints += score;
     }
 
-    //Reset scores
+    // Reset scores
     public static void initializeGame(){
         sessionPoints += score;
         inHypixelSays = true;
         gameHasStarted = false;
         isInParty = false;
-        joinYLevel = Minecraft.getMinecraft().thePlayer.posY; //Santa Says and Hypixel Says are at different Y levels for some reason
+        joinYLevel = Minecraft.getMinecraft().thePlayer.posY; // Santa Says and Hypixel Says are at different Y levels for some reason
         round = 1;
         score = 0;
         players = new String[3];
@@ -55,6 +56,8 @@ public class GameData {
         tabList.clear();
         chatsRemaining = 5;
         sendLeaderboardChat = false;
+        Speedrun.isFirstPlaceFinish = false;
+        Speedrun.updatePersonalBests();
         Utils.sendChat("Joined Hypixel Says");
     }
 }

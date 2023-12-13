@@ -26,11 +26,14 @@ import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
@@ -47,8 +50,8 @@ public class Utils {
     /**
      * Sends a request to an http API
      *
-     * @param domain The API host, such as "api.hypixel.net"
-     * @param get The GET call to make, such as "counts", "resources/games", "leaderboards", etc
+     * @param domain The API host, such as {@code "api.hypixel.net"}
+     * @param get The GET call to make, such as {@code "player"}, {@code "recentgames"}, {@code "leaderboards"}, etc
      *
      * @return The response as json/application
      */
@@ -59,10 +62,10 @@ public class Utils {
     /**
      * Sends a GET request to an http API, with one parameter
      *
-     * @param domain The API host, such as "api.hypixel.net"
-     * @param get The GET call to make, such as "player", "recentgames", etc
+     * @param domain The API host, such as {@code "api.hypixel.net"}
+     * @param get The GET call to make, such as {@code "player"}, {@code "recentgames"}, etc
      * @param apiKey Authentication key
-     * @param key The query parameter for the GET, such as "uuid", "player", or "name"
+     * @param key The query parameter for the GET, such as {@code "uuid"}, {@code "player"}, or {@code "name"}
      * @param value The value of the key
      *
      * @return The response as json/application
@@ -82,27 +85,33 @@ public class Utils {
     }
 
     /**
-     * Sends a GET request to an http API, with one parameter. This is not thread-blocking
+     * Sends a GET request to an http API. This is not thread-blocking
      *
-     * @param domain The API host, such as "api.hypixel.net"
-     * @param get The GET call to make, such as "player", "recentgames", etc
-     * @param apiKey Authentication key
-     * @param key The query parameter for the GET, such as "uuid", "player", or "name"
-     * @param value The value of the key
+     * @param domain The API host, such as {@code "api.hypixel.net"}
+     * @param get The GET call to make, such as {@code "resources/games"}, {@code "boosters"}, etc
      * @param consumer A function that is run after the request succeeds. Input a lambda function with one parameter, which is the response as json/application
      */
-    public static void asyncHttpGet(String domain, String apiKey, String get, String key, String value, Consumer<JsonObject> consumer) {
-        String url = String.format("https://%s/%s", domain, get);
-        boolean keyExists = false;
-        if (!apiKey.isEmpty()){
-            keyExists = true;
-            url = url + String.format("?key=%s", apiKey);
-        }
-        if (!key.isEmpty()){
-            url = url + String.format("%s%s=%s", keyExists?"&":"?",  key, value);
+    public static void asyncHttpGet(String domain, String get, Consumer<JsonObject> consumer) {
+        asyncHttpGet(domain, get, new HashMap<>(), consumer);
+    }
+
+    /**
+     * Sends a GET request to an http API, with one parameter. This is not thread-blocking
+     *
+     * @param domain The API host, such as {@code "api.hypixel.net"}
+     * @param get The GET call to make, such as {@code "player"}, {@code "recentgames"}, etc
+     * @param params A {@link java.util.HashMap} of query parameters, such as {@code "uuid"}, {@code "player"}, or {@code "name"}, and their values
+     * @param consumer A function that is run after the request succeeds. Input a lambda function with one parameter, which is the response as json/application
+     */
+    public static void asyncHttpGet(String domain, String get, HashMap<String, String> params, Consumer<JsonObject> consumer) {
+        StringBuilder url = new StringBuilder(String.format("https://%s/%s", domain, get));
+        String separator = "?";
+        for (HashMap.Entry<String, String> entry : params.entrySet()) {
+            url.append(String.format("%s%s=%s", separator, entry.getKey(), entry.getValue()));
+            separator = "&";
         }
         if (!httpClient.isRunning()) httpClient.start();
-        HttpGet request = new HttpGet(url);
+        HttpGet request = new HttpGet(url.toString());
         httpGets.add(request);
         httpClient.execute(request, new FutureCallback<HttpResponse>() {
 
@@ -117,7 +126,7 @@ public class Utils {
             }
 
             @Override
-            public void failed(Exception e) {}
+            public void failed(Exception ignored) {}
 
             @Override
             public void cancelled() {}
@@ -128,7 +137,7 @@ public class Utils {
     /**
      * Sends a POST request to an http API with authentication
      *
-     * @param domain The API host, such as "api.hypixel.net"
+     * @param domain The API host, such as {@code "api.hypixel.net"}
      * @param payload The POST json array payload to send
      *
      * @return The response as json/application
@@ -164,92 +173,63 @@ public class Utils {
         message = message.toLowerCase();
         if(message.contains("press")){//press the button
             return true;
-        }
-        if(message.contains("throw eggs")){//throw eggs at other players
+        } else if (message.contains("throw eggs")){//throw eggs at other players
             return true;
-        }
-        if(message.contains("throw snowball")){//throw snowball at other players
+        } else if (message.contains("throw snowball")){//throw snowball at other players
             return true;
-        }
-        if(message.contains("give rud")){//give rudolph his shiny red nose
+        } else if (message.contains("give rud")){//give rudolph his shiny red nose
             return true;
-        }
-        if(message.contains("get into a minecart")){//get into a minecart
+        } else if (message.contains("get into a minecart")){//get into a minecart
             return true;
-        }
-        if(message.contains("nether portal")){//enter the nether portal
+        } else if (message.contains("nether portal")){//enter the nether portal
             return true;
-        }
-        if(message.contains("end portal")){//enter the end portal
+        } else if (message.contains("end portal")){//enter the end portal
             return true;
-        }
-        if(message.contains("water safely without")){//jump into the water safely without hitting solid blocks
+        } else if (message.contains("water safely without")){//jump into the water safely without hitting solid blocks
             return true;
-        }
-        if(message.contains("play a song")){//play a song with the noteblocks
+        } else if (message.contains("play a song")){//play a song with the noteblocks
             return true;
-        }
-        if(message.contains("grandma")){//give grandma a flower
+        } else if (message.contains("grandma")){//give grandma a flower
             return true;
-        }
-        if(message.contains("on the spot")){//jump into the air on the spot
+        } else if (message.contains("on the spot")){//jump into the air on the spot
             return true;
-        }
-        if(message.contains("look at a") && message.contains("block")){//look at a block
+        } else if (message.contains("look at a") && message.contains("block")){//look at a block
             return true;
-        }
-        if(message.contains("extinguish yourself")){//extinguish yourself
+        } else if (message.contains("extinguish yourself")){//extinguish yourself
             return true;
-        }
-        if(message.contains("bed")){//get in a bed
+        } else if (message.contains("bed")){//get in a bed
             return true;
-        }
-        if(message.contains("remove the poison")){//remove the poison effect
+        } else if (message.contains("remove the poison")){//remove the poison effect
             return true;
-        }
-        if(message.contains("eggnog")){//drink the eggnog
+        } else if (message.contains("eggnog")){//drink the eggnog
             return true;
-        }
-        if(message.contains("completely still")){//stand completely still
+        } else if (message.contains("completely still")){//stand completely still
             return true;
-        }
-        if(message.contains("santa's hat")){//wear santa's hat
+        } else if (message.contains("santa's hat")){//wear santa's hat
             return true;
-        }
-        if(message.contains("look at the sky")){//look at the sky
+        } else if (message.contains("look at the sky")){//look at the sky
             return true;
-        }
-        if(message.contains("throw a diamond")){//throw a diamond at a player
+        } else if (message.contains("throw a diamond")){//throw a diamond at a player
             return true;
-        }
-        if(message.contains("nod by")){//nod by looking up and down
+        } else if (message.contains("nod by")){//nod by looking up and down
             return true;
-        }
-        if(message.contains("look at a player")){//look at a player's head
+        } else if (message.contains("look at a player")){//look at a player's head
             return true;
-        }
-        if(message.contains("wrapped present")){//give a player a wrapped present
+        } else if (message.contains("wrapped present")){//give a player a wrapped present
             return true;
-        }
-        if(message.contains("on the cobblestone")){//stand on the cobblestone
+        } else if (message.contains("on the cobblestone")){//stand on the cobblestone
             return true;
-        }
-        if(message.contains("spin around")){//spin around in a full circle
+        } else if (message.contains("spin around")){//spin around in a full circle
             return true;
-        }
-        if(message.contains("the horse")){//tame the horse by feeding it
+        } else if (message.contains("the horse")){//tame the horse by feeding it
             return true;
-        }
-        if(message.contains("open a present")){//open a present under the tree
+        } else if (message.contains("open a present")){//open a present under the tree
             return true;
-        }
-        if(message.contains("give santa")){//give santa milk and cookies
+        } else if (message.contains("give santa")){//give santa milk and cookies
             return true;
-        }
-        if(message.contains("on the ice")){//don't stand on the ice
+        } else if (message.contains("on the ice")){//don't stand on the ice
             return true;
-        }
-        if(message.contains("remove the coal")){//remove the coal from your inventory
+        } else if (message.contains("remove the coal")){//remove the coal from your inventory
             return true;
         }
         return false;
@@ -301,13 +281,31 @@ public class Utils {
         return oldArray;
     }
 
+
+    /**
+     * Returns the lesser of two values. If one value is zero, the other will be returned
+     *
+     * @param a One long to compare
+     * @param b The other long to compare
+     *
+     * @throws IllegalArgumentException if both values are zero
+     *
+     * @return The lesser non-zero value
+     */
+    public static long notZeroMin(long a, long b) {
+        if (a == 0 && b == 0) throw new IllegalArgumentException("Both values are zero");
+        else if (a == 0) return b;
+        else if (b == 0) return a;
+        else return Math.min(a, b);
+    }
+
     public static void tagWins(EntityPlayer player) {
         if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean()) {
             try {
                 drawTag(player, GameData.hsWins.get(player.getUniqueID().toString()));
             } catch (NullPointerException e) {
                 try {
-                    asyncHttpGet("www.highpixelspeed.com", "", "player", "uuid", player.getUniqueID().toString(), response -> {
+                    asyncHttpGet("www.highpixelspeed.com", "player", new HashMap<String, String>() {{put("uuid", player.getUniqueID().toString());}}, response -> {
                         if (response.get("wins_simon_says") != null) {
                             int wins = response.get("wins_simon_says").getAsInt();
                             if (player.equals(Minecraft.getMinecraft().thePlayer)) myWins = wins;
@@ -338,7 +336,7 @@ public class Utils {
             Minecraft.getMinecraft().ingameGUI.getTabList().setFooter(new ChatComponentText(String.format("\u00A7b\u00A7nHypixel Says Session Stats\n\u00A7r\u00A7bGames Played: \u00A7e%s \u00A7bWins: \u00A7e%s \u00A7bWLR: \u00A7e%s\n\u00A7bPoints: \u00A7e%s \u00A7bPoints per Win: \u00A7e%s",
                     GameData.sessionGamesPlayed,
                     GameData.sessionWins,
-                    Math.round((float) GameData.sessionWins / (GameData.sessionGamesPlayed - GameData.sessionWins) * 100f) / 100f,
+                    GameData.sessionWins > 0 && GameData.sessionGamesPlayed == GameData.sessionWins ? "\u221E" : Math.round((float) GameData.sessionWins / (GameData.sessionGamesPlayed - GameData.sessionWins) * 100f) / 100f,
                     GameData.sessionPoints + GameData.score,
                     Math.round((float) GameData.sessionWinRoundPoints / GameData.sessionWins * 100f) / 100f)));
         } else {
@@ -347,10 +345,18 @@ public class Utils {
     }
 
     /**
+     * @param instant Number of milliseconds
+     * @return Time in the format mm:ss.SSS
+     */
+    public static String formatTime(long instant) {
+        return (new SimpleDateFormat("mm:ss.SSS")).format(new Date(instant));
+    }
+
+    /**
      * @param instant Number of seconds since the Unix Epoch
      * @return Date and time in the format yyyy-MM-dd HH:mm:ss
      */
-    public static String formatTime(long instant) {
+    public static String formatDateTime(long instant) {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault()).format(Instant.ofEpochSecond(instant));
     }
 }

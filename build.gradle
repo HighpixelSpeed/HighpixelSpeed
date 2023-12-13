@@ -60,11 +60,11 @@ minecraft {
 }
 
 processResources {
-    // this will ensure that this task is redone when the versions change.
+    // This will ensure that this task is redone when the versions change.
     inputs.property "mod_version", project.version
     inputs.property "mc_version", project.minecraft.version
 
-    // replace stuff in mcmod.info, nothing else
+    // Replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include "mcmod.info"
         expand "mod_id":"${mod_id}",
@@ -74,11 +74,11 @@ processResources {
                 "mc_version":"${mc_version}"
     }
 
-    // copy everything else, that's not the mcmod.info
+    // Copy everything else, that's not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude "mcmod.info"
     }
 }
 
-//Intellij IDEA fix. Uncomment for building with IDEA
+// Intellij IDEA fix. Uncomment for building with IDEA
 //sourceSets { main { output.resourcesDir = output.classesDir } }

@@ -4,6 +4,7 @@ import com.highpixelspeed.highpixelspeed.commands.HsCommand;
 import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
 import com.highpixelspeed.highpixelspeed.utils.ChatEvent;
 import com.highpixelspeed.highpixelspeed.utils.JoinWorld;
+import com.highpixelspeed.highpixelspeed.feature.Speedrun;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -24,9 +25,10 @@ public class HighpixelSpeed {
     
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(new JoinWorld());
         MinecraftForge.EVENT_BUS.register(new ChatEvent());
+        MinecraftForge.EVENT_BUS.register(new JoinWorld());
         MinecraftForge.EVENT_BUS.register(new ConfigHandler());
+        MinecraftForge.EVENT_BUS.register(new Speedrun());
         ClientCommandHandler.instance.registerCommand(new HsCommand());
         mod = this;
     }

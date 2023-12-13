@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
 import com.highpixelspeed.highpixelspeed.data.GameData;
+import com.highpixelspeed.highpixelspeed.feature.Speedrun;
 import com.highpixelspeed.highpixelspeed.utils.JoinWorld;
 import com.highpixelspeed.highpixelspeed.utils.Utils;
 import net.minecraft.client.Minecraft;
@@ -66,6 +67,7 @@ public class HsCommand extends CommandBase {
                 Utils.sendChat(String.format("\u00A7%s/hs fortyonly \u00A7bIf Forty Point Mode is true, requeue if you cannot get 40 points", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean()) ? "a" : "c"));
                 Utils.sendChat(String.format("\u00A7%s/hs loss \u00A7bRequeue if you cannot win", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean()) ? "a" : "c"));
                 Utils.sendChat(String.format("\u00A7%s/hs party \u00A7bCancel requeuing if you are in a party", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue With Party").getBoolean()) ? "a" : "c"));
+                Utils.sendChat(String.format("\u00A7%s/hs speedrun \u00A7bTime your games for speedrunning. Use \u00A7e/hs speedrun help\u00A7b for options", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Enabled").getBoolean()) ? "a" : "c"));
                 Utils.sendChat(String.format("\u00A7%s/hs stats \u00A7bShow summary of stats during current play session. Use \u00A7e/hs stats help\u00A7b for options", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).get("Enabled").getBoolean()) ? "a" : "c"));
                 Utils.sendChat(String.format("\u00A7%s/hs tagwins \u00A7bShow Hypixel Says win count above players' heads", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean()) ? "a" : "c"));
                 Utils.sendChat("\u00A7e/hs play \u00A7bJoin Hypixel Says");
@@ -99,6 +101,9 @@ public class HsCommand extends CommandBase {
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue With Party").getBoolean()) ? "Requeuing with a party is enabled" : "Requeuing with a party is disabled");
             } else if(args[0].equalsIgnoreCase("play")) { //hs play
                 Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
+            } else if(args[0].equalsIgnoreCase("speedrun")) { //hs speedrun
+                ConfigHandler.toggle(ConfigHandler.CATEGORY_SPEEDRUN, "Enabled");
+                Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Enabled").getBoolean()) ? "Speedrun mode is enabled" : "Speedrun mode is disabled");
             } else if(args[0].equalsIgnoreCase("stats")) { //hs stats
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_STATS, "Enabled");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).get("Enabled").getBoolean()) ? "Session Stats are enabled" : "Session Stats are disabled");
@@ -114,7 +119,7 @@ public class HsCommand extends CommandBase {
                 if(args[1].equalsIgnoreCase("help")) { //hs autododge help
                     Utils.sendChat("\u00A7m                                                                             ");
                     Utils.sendChat("\u00A7e/hs autododge help \u00A7bDisplay this message\n");
-                    Utils.sendChat(String.format("\u00A7%s/hs autododge \u00A7bEnable auto dodge", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) ? "a" : "c"));
+                    Utils.sendChat(String.format("\u00A7%s/hs autododge \u00A7bEnable Auto Dodge", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) ? "a" : "c"));
                     Utils.sendChat("\u00A7e/hs autododge <wins> \u00A7bSet the number of wins the player must have");
                     Utils.sendChat(String.format("Threshold is currently set to \u00A7e%s", ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt()));
                     Utils.sendChat("\u00A7m                                                                             ");
@@ -131,13 +136,64 @@ public class HsCommand extends CommandBase {
                 if(args[1].equalsIgnoreCase("help")) { //hs blacklist help
                     Utils.sendChat("\u00A7m                                                                             ");
                     Utils.sendChat("\u00A7e/hs blacklist help \u00A7bDisplay this message\n");
-                    Utils.sendChat(String.format("\u00A7%s/hs blacklist \u00A7bEnable blacklist", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Enabled").getBoolean()) ? "a" : "c"));
+                    Utils.sendChat(String.format("\u00A7%s/hs blacklist \u00A7bEnable Blacklist", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Enabled").getBoolean()) ? "a" : "c"));
                     Utils.sendChat("\u00A7e/hs blacklist add <username> [username] ... \u00A7bAdd player(s) to your blacklist (limit 10)");
                     Utils.sendChat("\u00A7e/hs blacklist list \u00A7bDisplay all blacklisted players");
                     Utils.sendChat("\u00A7e/hs blacklist remove <username> [username] ... \u00A7bRemove player(s) from your blacklist");
                     Utils.sendChat("\u00A7m                                                                             ");
                 } else if(args[1].equalsIgnoreCase("list")) { //hs blacklist list
                     Utils.sendChat("Blacklisted players:\n\u00A7b" + String.join(", ", ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Blacklisted Players").getStringList()));
+                }
+            } else if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_SPEEDRUN)) {
+                if (args[1].equalsIgnoreCase("help")) { //hs speedrun help
+                    Utils.sendChat("\u00A7m                                                                             ");
+                    Utils.sendChat("\u00A7e/hs speedrun help \u00A7bDisplay this message\n");
+                    Utils.sendChat(String.format("\u00A7%s/hs speedrun \u00A7bEnable Speedrun mode", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Enabled").getBoolean()) ? "a" : "c"));
+                    Utils.sendChat(String.format("\u00A7%s/hs speedrun game \u00A7bSet level mode to time the entire game", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").getString().equals("Full Game") ? "a" : "c")));
+                    Utils.sendChat(String.format("\u00A7%s/hs speedrun round \u00A7bSet level mode to time each individual round", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").getString().equals("Individual Rounds")) ? "a" : "c"));
+                    Utils.sendChat(String.format("\u00A7%s/hs speedrun all \u00A7bIf level mode is set to Individual Rounds, time every round, not only the speedrun category rounds", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Time All Rounds").getBoolean()) ? "a" : "c"));
+                    Utils.sendChat("\u00A7e/hs speedrun name \u00A7bDisplay your username set for speedrun.com");
+                    Utils.sendChat("\u00A7e/hs speedrun name <username> \u00A7bEnter your speedrun.com username if you have any posted Hypixel Says runs");
+                    Utils.sendChat(String.format("\u00A7%s/hs speedrun requeue \u00A7bRequeue when your run time has surpassed your personal best", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Requeue Slow Run").getBoolean()) ? "a" : "c"));
+                    Utils.sendChat("\u00A7e/hs speedrun stats \u00A7bDisplay your personal best for each speedrun category");
+                    Utils.sendChat("\u00A7e/hs speedrun reset \u00A7bPermanently erase your speedrun personal best stats");
+                    Utils.sendChat("\u00A7m                                                                             ");
+                } else if (args[1].equalsIgnoreCase("game")) { //hs speedrun game
+                    Utils.sendChat(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").getString().equals("Full Game") ? "Level mode is already set to Full Game" : "Level mode set to Full Game");
+                    ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").set("Full Game");
+                } else if (args[1].equalsIgnoreCase("round")) { //hs speedrun round
+                    Utils.sendChat(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").getString().equals("Individual Rounds") ? "Level mode is already set to Individual Rounds" : "Level mode set to Individual Rounds");
+                    ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").set("Individual Rounds");
+                } else if (args[1].equalsIgnoreCase("all")) { //hs speedrun all
+                    ConfigHandler.toggle(ConfigHandler.CATEGORY_SPEEDRUN, "Time All Rounds");
+                    Utils.sendChat(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Time All Rounds").getBoolean() ? "Timing all rounds is enabled" : "Only speedrun category rounds will be timed");
+                } else if (args[1].equalsIgnoreCase("name")) { //hs speedrun name
+                    Utils.sendChat("Your speedrun.com username is " + ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Speedrun.com Username").getString());
+                } else if (args[1].equalsIgnoreCase("stats")) { //hs speedrun stats
+                    boolean sentMessage = false;
+                    Utils.sendChat("Your speedrun personal bests:");
+                    for (String category : Arrays.asList("Win", "Complete%", "Anvil", "Iron Golem", "Parkour", "Jump off Platform", "Pig off Platform", "Full Inventory")) {
+                        try {
+                            Utils.sendChat(String.format("\u00A7%s%s \u00A7b%s", Speedrun.publicPersonalBests.get(category) == 0 ? "e" : "a", Utils.formatTime(Speedrun.getPersonalBest(category)), category));
+                            sentMessage = true;
+                        } catch (IllegalArgumentException ignored) {
+                        }
+                    }
+                    if (!sentMessage) Utils.sendChat("don't exist :(");
+                } else if (args[1].equalsIgnoreCase("requeue")) { //hs speedrun requeue
+                    ConfigHandler.toggle(ConfigHandler.CATEGORY_SPEEDRUN, "Requeue Slow Run");
+                    Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Requeue Slow Run").getBoolean()) ? "Requeueing slow runs is enabled" : "Requeueing slow runs is disabled");
+                } else if (args[1].equalsIgnoreCase("reset")) { //hs speedrun reset
+                    Utils.sendChat("Are you sure you want to permanently erase your speedrun personal best stats?");
+                    Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7a\u00A7l[YES]")
+                            .setChatStyle(new ChatStyle()
+                                    .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Reset personal best stats")))
+                                    .setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/hs speedrun resetconfirm"))));
+                } else if (args[1].equalsIgnoreCase("resetconfirm")) {
+                    for (String category : Speedrun.publicPersonalBests.keySet()) {
+                        ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get(category).set(0);
+                    }
+                    Utils.sendChat("All personal best stats erased");
                 }
             } else if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_STATS)) {
                 if(args[1].equalsIgnoreCase("help")) { //hs stats help
@@ -158,7 +214,7 @@ public class HsCommand extends CommandBase {
                 } else if(args[1].equalsIgnoreCase("save")) { //hs stats save
                     Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).get("Save Date").getInt() == 0
                             ? "" : String.format("You already have a session saved from %s. Those stats will be overridden. ",
-                            Utils.formatTime(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).get("Save Date").getInt()))) +
+                            Utils.formatDateTime(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).get("Save Date").getInt()))) +
                             "Are you sure you want to save your current session stats?");
 
                     Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7a\u00A7l[YES]")
@@ -171,7 +227,7 @@ public class HsCommand extends CommandBase {
                     } else {
                         Utils.sendChat((GameData.sessionGamesPlayed == 0 ? "" : "You already have stats from your current session. Those stats will be overridden. ") +
                                 String.format("Are you sure you want to load your saved session stats from %s?",
-                                        Utils.formatTime(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).get("Save Date").getInt())));
+                                        Utils.formatDateTime(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).get("Save Date").getInt())));
 
                         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("\u00A7a\u00A7l[YES]")
                                 .setChatStyle(new ChatStyle()
@@ -271,6 +327,22 @@ public class HsCommand extends CommandBase {
                         Utils.sendChat(String.format("%s%s%s removed from your blacklist", (removeList.size() > 1) ? "Players " : "", String.join(", ", removeList).replace("\"", ""), (removeList.size() > 1) ? " were" : " was"));
                     }
                 }
+            } else if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_SPEEDRUN)) {
+                if(args[1].equalsIgnoreCase("name")) { //hs speedrun name <username>
+                    Utils.asyncHttpGet("www.speedrun.com", "api/v1/users/" + args[2], response -> {
+                        if (response.has("data")) {
+                            ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Speedrun.com Username").set(response
+                                    .getAsJsonObject("data")
+                                    .getAsJsonObject("names")
+                                    .getAsJsonPrimitive("international")
+                                    .getAsString());
+                            Utils.sendChat("Your speedrun.com username has been set to " + ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Speedrun.com Username").getString());
+                            ConfigHandler.config.save();
+                            Speedrun.resetPersonalBests();
+                            Speedrun.updatePersonalBests();
+                        } else Utils.sendChat(String.format("The username %s does not exist on speedrun.com", args[2]));
+                    });
+                }
             }
         }
 
@@ -288,14 +360,16 @@ public class HsCommand extends CommandBase {
         ArrayList<String> playerNames = new ArrayList<String>() {{ tabList.iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
 
         if(args.length == 1){
-             return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "autododge", "blacklist", "empty", "forty", "fortyonly", "loss", "play", "party", "stats", "tagwins")));
+             return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "autododge", "blacklist", "empty", "forty", "fortyonly", "loss", "play", "party", "speedrun", "stats", "tagwins")));
         } else if(args.length == 2) {
             if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_AUTODODGE)) {
                 return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "2500", "10000")));
             } else if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_BLACKLIST)) {
                 return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "add", "list", "remove")));
+            } else if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_SPEEDRUN)) {
+                return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "game", "round", "all", "name", "requeue", "stats", "reset")));
             } else if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_STATS)) {
-                return matchingArgs(args, new ArrayList<>(Arrays.asList("reset", "save", "load")));
+                return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "reset", "save", "load")));
             }
         } else {
             if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_BLACKLIST)) {

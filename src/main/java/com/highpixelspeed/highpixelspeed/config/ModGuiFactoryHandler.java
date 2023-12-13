@@ -45,16 +45,17 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
             super(guiScreen, getConfigElements(), HighpixelSpeed.MODID, HighpixelSpeed.MODID, false, false, I18n.format("gui.config.general"));
         }
 
-        //Main config screen elements
+        // Main config screen elements
         private static List<IConfigElement> getConfigElements() {
             List<IConfigElement> list = new ArrayList<>(new ConfigElement(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL)).getChildElements());
             list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_AUTODODGE, "gui.config.autododge", AutoDodgeEntry.class));
             list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_BLACKLIST, "gui.config.blacklist", BlacklistEntry.class));
+            list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_SPEEDRUN, "gui.config.speedrun", SpeedrunEntry.class));
             list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_STATS, "gui.config.stats", StatsEntry.class));
             return list;
         }
 
-        //Auto dodge config screen
+        // Auto dodge config screen
         public static class AutoDodgeEntry extends GuiConfigEntries.CategoryEntry {
 
             public AutoDodgeEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement element) {
@@ -77,7 +78,7 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
             }
         }
 
-        //Blacklist config screen
+        // Blacklist config screen
         public static class BlacklistEntry extends GuiConfigEntries.CategoryEntry {
 
             public BlacklistEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement element) {
@@ -100,7 +101,30 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
             }
         }
 
-        //Session Stats config screen
+        // Speedrun config screen
+        public static class SpeedrunEntry extends GuiConfigEntries.CategoryEntry {
+
+            public SpeedrunEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement element) {
+                super(owningScreen, owningEntryList, element);
+            }
+
+            @Override
+            protected GuiScreen buildChildScreen() {
+
+                return new GuiConfig(
+                        this.owningScreen,
+                        new ArrayList<>((new ConfigElement(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN))).getChildElements()),
+                        this.owningScreen.modID,
+                        ConfigHandler.CATEGORY_SPEEDRUN,
+                        this.configElement.requiresWorldRestart() || this.owningScreen.allRequireWorldRestart,
+                        this.configElement.requiresMcRestart() || this.owningScreen.allRequireMcRestart,
+                        I18n.format("gui.config.general"),
+                        ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).getComment()
+                );
+            }
+        }
+
+        // Session Stats config screen
         public static class StatsEntry extends GuiConfigEntries.CategoryEntry {
 
             public StatsEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement element) {

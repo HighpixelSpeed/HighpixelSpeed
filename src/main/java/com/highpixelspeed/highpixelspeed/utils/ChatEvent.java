@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
 import com.highpixelspeed.highpixelspeed.data.GameData;
+import com.highpixelspeed.highpixelspeed.feature.Speedrun;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.Score;
@@ -15,32 +16,44 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ChatEvent {
+    static int count = 0;
+    static String[] list = new String[80];
 
     @SubscribeEvent(receiveCanceled = true)
     public void onChat(ClientChatReceivedEvent event){
 
         String message = StringUtils.stripControlCodes(event.message.getFormattedText());
 
-        if (GameData.doPartyCheck > 0) { //check for beginning and ending borders of party info
-            if (GameData.doPartyCheck == 1) {
-                event.setCanceled(true); //cancel sending party info after the first border
+        if (GameData.doPartyCheck > 0) { // Check for beginning and ending borders of party info
+            if (GameData.doPartyCheck == 2) {
+                Speedrun.partyMembers.clear();
+            } else if (GameData.doPartyCheck == 1) {
+                event.setCanceled(true); // Cancel sending party info after the first border
             }
             if (message.contains("-----------------")) {
-                event.setCanceled(true); //cancel sending the first border
+                event.setCanceled(true); // Cancel sending the first border
                 GameData.doPartyCheck--;
             } else if (message.contains("Party Members (")) {
                 GameData.isInParty = true;
+                Speedrun.isWinEligible = false;
+            } else if (message.contains("\u25CF")) {
+                for (String names : message.split(" \u25CF")) {
+                    String[] particles = names.split(" ");
+                    String name = particles[particles.length - 1];
+                    if (!name.equals(Minecraft.getMinecraft().thePlayer.getDisplayNameString())) Speedrun.partyMembers.add(name);
+                }
             }
-        } else if (GameData.sendLeaderboardChat) {
+        } else if (GameData.sendLeaderboardChat && !ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Enabled").getBoolean()) {
             GameData.chatsRemaining--;
             if (GameData.chatsRemaining == 0) {
-                requeue(false);
+                 requeue(false);
             }
         }
 
@@ -50,10 +63,15 @@ public class ChatEvent {
                 GameData.inHypixelSays = true;
                 GameData.addSessionGame = true;
                 GameData.sessionGamesPlayed--;
+                if (GameData.sessionGamesPlayed < 0) GameData.sessionGamesPlayed = 0;
             } else return;
         }
 
-        if (message.startsWith("NEXT TASK")){
+        if (message.startsWith("NEXT TASK")) {
+            if (!Arrays.asList(list).contains(message)) {
+                list[count] = message;
+                count++;
+            }
             ArrayList<String> lines = (ArrayList<String>) getSidebarLines();
             for(String line : lines){
                 if(line.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString()) && line.split(":").length==2 ){
@@ -82,8 +100,8 @@ public class ChatEvent {
             }
             checkRequeue(true);
 
-        } else if (message.contains("finished") && !message.contains(":")){ //all player chats have ":" in them. filtering
-            String finishedPlayer = message.split(" finished")[0];                                   //out colons guarantees none will be processed
+        } else if (message.contains("finished") && !message.contains(":")) { // All player chats have ":" in them. filtering
+            String finishedPlayer = message.split(" finished")[0];                                   // Out colons guarantees none will be processed
             if (finishedPlayer.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString())){
                 GameData.score = GameData.score + GameData.upForGrabs;
             }
@@ -96,26 +114,28 @@ public class ChatEvent {
                 GameData.upForGrabs--;
             }
 
-        } else if (message.contains("Game ended") && !message.contains(":")){
-            GameData.doRoundCheck = true; //Unnecessary except after rejoin...
-            GameData.round++; //Because this is here because it's necessary for...
-            checkRequeue(false); //This
+        } else if (message.contains("Game ended") && !message.contains(":")) {
+            GameData.doRoundCheck = true; // Unnecessary except after rejoin...
+            GameData.round++; // because this is here because it's necessary for...
+            checkRequeue(false); // this
+            Utils.redrawSessionStats();
 
-        } else if (message.contains(" disconnected ") && !message.contains(":")){
+        } else if (message.contains(" disconnected ") && !message.contains(":") ){
             String disconnectedPlayer = message.split(" disconnected ")[0];
             if (disconnectedPlayer.equals(GameData.players[1])){
                 checkRequeue(false);
             }
 
-        } else if (message.contains("1st Place - ") && !message.contains(":")){
+        } else if (message.contains("1st Place - ") && !message.contains(":")) {
             GameData.sendLeaderboardChat = true;
             if (message.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString())) {
                 GameData.addSessionWin();
+                Utils.redrawSessionStats();
             }
         }
     }
 
-    //thanks sychic for sending this from the DSM github
+    // Thanks sychic for sending this from the DSM github
     public static List<String> getSidebarLines() {
         List<String> lines = new ArrayList<>();
         if (Minecraft.getMinecraft().theWorld == null) return lines;
@@ -175,6 +195,17 @@ public class ChatEvent {
     }
     
     static void checkRequeue(boolean isNewTask) {
+        int possiblePoints;
+        int roundsLeft = 16 - GameData.round;
+        if (GameData.isOnePointer && isNewTask){  // If this is executed on "Game ended," it needs to be counted as 3-pointer,
+            possiblePoints = (roundsLeft * 3)-2;    // in case the current round was a 1-pointer
+        } else{
+            possiblePoints = roundsLeft * 3;
+        }
+
+        if (possiblePoints + GameData.score < GameData.scores[0]) Speedrun.isWinEligible = false;
+        if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Enabled").getBoolean()) return;
+
         Collection<NetworkPlayerInfo> tabList = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
         List<String> playerNames = new ArrayList<String>() {{ tabList.iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
         List<String> disconnectedPlayers = new ArrayList<>();
@@ -188,30 +219,22 @@ public class ChatEvent {
             });
         }
         GameData.secondPlaceLeft = disconnectedPlayers.contains(GameData.players[1]) && tabList.size() != 1;
-        
-        int possiblePoints;
-        int roundsLeft = 16 - GameData.round; 
-        if (GameData.isOnePointer && isNewTask){  //if this is executed on "Game ended," it needs to be counted as 3-pointer,
-            possiblePoints = (roundsLeft*3)-2;    //in case the current round was a 1-pointer
-        } else{
-            possiblePoints = roundsLeft*3;
-        }
-        
+
         if (!GameData.isInParty || ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue With Party").getBoolean()) {
-            if (possiblePoints+GameData.score<40 && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean()
+            if (possiblePoints + GameData.score < 40 && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean()
                     && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Only").getBoolean()){
                 Utils.sendChat("You could not get at least 40 points and were automatically requeued");
                 requeue(true);
-            } else if (possiblePoints+GameData.score>=40 && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean()){
-                return; //Cancel subsequent requeue attempts
-            } else if (possiblePoints+GameData.scores[1]<GameData.score){
+            } else if (possiblePoints + GameData.score >= 40 && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean()){
+                return; // Cancel subsequent requeue attempts
+            } else if (possiblePoints + GameData.scores[1] < GameData.score){
                 Utils.sendChat("You won and were automatically requeued");
                 GameData.addSessionWin();
                 requeue(true);
-            } else if (possiblePoints+GameData.score<GameData.scores[0] && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean()){
+            } else if (possiblePoints + GameData.score < GameData.scores[0] && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue On Loss").getBoolean()){
                 Utils.sendChat("You could not win and were automatically requeued");
                 requeue(true);
-            } else if (possiblePoints+GameData.scores[2]<GameData.score && GameData.secondPlaceLeft){
+            } else if (possiblePoints + GameData.scores[2] < GameData.score && GameData.secondPlaceLeft){
                 Utils.sendChat("The player in 2nd place left, so you won and were automatically requeued");
                 GameData.addSessionWin();
                 requeue(true);
@@ -220,7 +243,7 @@ public class ChatEvent {
     }
     
     static void requeue(boolean subtractRound) {
-        Utils.sendChat(String.format("After %s rounds:", GameData.round - (subtractRound? 1 : 0)));
+        Utils.sendChat(String.format("After %s rounds:", GameData.round - (subtractRound ? 1 : 0)));
         Utils.sendChat("\u00A7m                         ");
         for (int line = 8; line >= 6; line--){
             Utils.sendChat(getSidebarLines().get(line));
