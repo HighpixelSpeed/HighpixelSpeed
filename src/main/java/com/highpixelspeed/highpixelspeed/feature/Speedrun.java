@@ -145,10 +145,20 @@ public class Speedrun {
             if (chatsRemaining > 0) {
                 chatsRemaining--;
                 if (chatsRemaining == 0) {
-                    Utils.sendChat(String.format("You broke your record for the \u00A7e%s \u00A7bcategory, with a time of \u00A7e%s%s", recordCategory, Utils.formatTime(inGameDuration), partyMembers.isEmpty() ? "" : "\u00A7b and with \u00A7e" + String.join("\u00A7b, \u00A7e", partyMembers) + "\u00A7b in your party"));
+                    if (inGameDuration < worldRecords.get(recordCategory)) {
+                        worldRecords.put(recordCategory, inGameDuration);
+                        Utils.sendChat(String.format("You broke the world record for the \u00A7e%s \u00A7bcategory, with a time of \u00A76%s%s",
+                                recordCategory,
+                                Utils.formatTime(inGameDuration),
+                                partyMembers.isEmpty() ? "" : "\u00A7b and with \u00A7e" + String.join("\u00A7b, \u00A7e", partyMembers) + "\u00A7b in your party"));
+                    } else Utils.sendChat(String.format("You broke your record for the \u00A7e%s \u00A7bcategory, with a time of \u00A7e%s%s",
+                            recordCategory,
+                            Utils.formatTime(inGameDuration),
+                            partyMembers.isEmpty() ? "" : "\u00A7b and with \u00A7e" + String.join("\u00A7b, \u00A7e", partyMembers) + "\u00A7b in your party"));
                     recordCategory = "";
                 }
             }
+
             if (message.contains("1st Place - ") && !message.contains(":") && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").getString().equals("Full Game")) {
                 // End game run
                 inGameDuration = System.currentTimeMillis() - gameStartedTime;
@@ -157,13 +167,11 @@ public class Speedrun {
                     ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Complete%").set((int) inGameDuration);
                     recordCategory = "Complete%";
                     chatsRemaining = 5;
-                    if (inGameDuration < worldRecords.get("Complete%")) worldRecords.put("Complete%", inGameDuration);
                 }
                 if (message.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString()) && isWinEligible
                         && (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Win").getInt() == 0 || inGameDuration < ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Win").getInt())
                         && (publicPersonalBests.get("Win") == 0L || inGameDuration < publicPersonalBests.get("Win"))) {
                     ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Win").set((int) inGameDuration);
-                    if (inGameDuration < worldRecords.get("Win")) worldRecords.put("Win", inGameDuration);
                     isFirstPlaceFinish = true;
                     recordCategory = "Win";
                     chatsRemaining = 5;
@@ -190,9 +198,10 @@ public class Speedrun {
                         && (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get(roundInProgress.getReadableName()).getInt() == 0 || inRoundDuration < ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get(roundInProgress.getReadableName()).getInt())
                         && (publicPersonalBests.get(roundInProgress.getReadableName()) == 0L || inRoundDuration < publicPersonalBests.get(roundInProgress.getReadableName()))) {
                     ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get(roundInProgress.getReadableName()).set((int) inRoundDuration);
-                    Utils.sendChat(String.format("You broke your record for the \u00A7e%s \u00A7bround, with a time of \u00A7e%s", roundInProgress.getReadableName(), Utils.formatTime(inRoundDuration)));
-                    if (inRoundDuration < worldRecords.get(roundInProgress.getReadableName()))
+                    if (inRoundDuration < worldRecords.get(roundInProgress.getReadableName())) {
                         worldRecords.put(roundInProgress.getReadableName(), inRoundDuration);
+                        Utils.sendChat(String.format("You broke the world record for the \u00A7e%s \u00A7bround, with a time of \u00A76%s", roundInProgress.getReadableName(), Utils.formatTime(inRoundDuration)));
+                    } else Utils.sendChat(String.format("You broke your record for the \u00A7e%s \u00A7bround, with a time of \u00A7e%s", roundInProgress.getReadableName(), Utils.formatTime(inRoundDuration)));
                     ConfigHandler.config.save();
                 }
                 roundInProgress = null;

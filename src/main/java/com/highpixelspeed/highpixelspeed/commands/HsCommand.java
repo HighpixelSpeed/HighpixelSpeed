@@ -174,7 +174,12 @@ public class HsCommand extends CommandBase {
                     Utils.sendChat("Your speedrun personal bests:");
                     for (String category : Arrays.asList("Win", "Complete%", "Anvil", "Iron Golem", "Parkour", "Jump off Platform", "Pig off Platform", "Full Inventory")) {
                         try {
-                            Utils.sendChat(String.format("\u00A7%s%s \u00A7b%s", Speedrun.publicPersonalBests.get(category) == 0 ? "e" : "a", Utils.formatTime(Speedrun.getPersonalBest(category)), category));
+                            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(String.format("\u00A7%s%s \u00A7b%s",
+                                    Speedrun.publicPersonalBests.get(category) == 0 ? "e" : "a",
+                                    Utils.formatTime(Speedrun.getPersonalBest(category)),
+                                    category))
+                                    .setChatStyle(new ChatStyle()
+                                            .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("\u00A76" + Utils.formatTime(Speedrun.worldRecords.get(category)))))));
                             sentMessage = true;
                         } catch (IllegalArgumentException ignored) {
                         }
