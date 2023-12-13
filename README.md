@@ -83,7 +83,8 @@ This setting does nothing when Full Game is enabled.
 You can, of course, enter someone else's name and race against their runs instead.  
 `/hs speedrun requeue` Toggle requeuing when your run time has surpassed your personal best.
 Highpixel Speed conservatively estimates when it becomes impossible to complete the game in less time than your personal best.  
-`/hs speedrun stats` Display your personal bests from the mod or speedrun.com for all categories.  
+`/hs speedrun stats` Display your personal bests from the mod or speedrun.com for all categories.
+Hover over a time to see the world record.  
 `/hs speedrun reset` Erase your personal bests.
 This cannot be undone.
 
