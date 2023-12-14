@@ -159,26 +159,28 @@ public class Speedrun {
                 }
             }
 
-            if (message.contains("1st Place - ") && !message.contains(":") && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").getString().equals("Full Game")) {
+            if (message.contains("1st Place - ") && !message.contains(":")) {
                 // End game run
-                inGameDuration = System.currentTimeMillis() - gameStartedTime;
-                if ((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Complete%").getInt() == 0 || inGameDuration < ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Complete%").getInt())
-                        && (publicPersonalBests.get("Complete%") == 0L || inGameDuration < publicPersonalBests.get("Complete%"))) {
-                    ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Complete%").set((int) inGameDuration);
-                    recordCategory = "Complete%";
-                    chatsRemaining = 5;
-                }
-                if (message.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString()) && isWinEligible
-                        && (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Win").getInt() == 0 || inGameDuration < ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Win").getInt())
-                        && (publicPersonalBests.get("Win") == 0L || inGameDuration < publicPersonalBests.get("Win"))) {
-                    ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Win").set((int) inGameDuration);
-                    isFirstPlaceFinish = true;
-                    recordCategory = "Win";
-                    chatsRemaining = 5;
-                }
                 gameInProgress = false;
+                inGameDuration = System.currentTimeMillis() - gameStartedTime;
                 gameStartedTime = 0L;
-                ConfigHandler.config.save();
+                if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").getString().equals("Full Game")) {
+                    if ((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Complete%").getInt() == 0 || inGameDuration < ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Complete%").getInt())
+                            && (publicPersonalBests.get("Complete%") == 0L || inGameDuration < publicPersonalBests.get("Complete%"))) {
+                        ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Complete%").set((int) inGameDuration);
+                        recordCategory = "Complete%";
+                        chatsRemaining = 5;
+                    }
+                    if (message.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString()) && isWinEligible
+                            && (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Win").getInt() == 0 || inGameDuration < ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Win").getInt())
+                            && (publicPersonalBests.get("Win") == 0L || inGameDuration < publicPersonalBests.get("Win"))) {
+                        ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Win").set((int) inGameDuration);
+                        isFirstPlaceFinish = true;
+                        recordCategory = "Win";
+                        chatsRemaining = 5;
+                    }
+                    ConfigHandler.config.save();
+                }
             } else if (message.startsWith("NEXT TASK")) {
                 color = null;
                 if (1 < Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap().size() && Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap().size() < 7) {
