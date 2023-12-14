@@ -208,11 +208,11 @@ public class Speedrun {
                 time = inRoundDuration;
             } else if (message.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString()) && message.contains("failed") && !message.contains(":")) {
                 // End round run if failed
-                roundInProgress = null;
                 inRoundDuration = System.currentTimeMillis() - roundStartedTime;
                 roundStartedTime = 0L;
                 time = inRoundDuration;
-                if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").getString().equals("Individual Rounds")) color = "c";
+                if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").getString().equals("Individual Rounds") && (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Time All Rounds").getBoolean() || (roundInProgress != null && roundInProgress != Round.OTHER))) color = "c";
+                roundInProgress = null;
             } else if (message.contains("Game ended") && !message.contains(":")) {
                 // Clear timer
                 roundInProgress = null;
