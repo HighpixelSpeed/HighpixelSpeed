@@ -11,7 +11,6 @@ import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,10 +86,10 @@ public class Speedrun {
     }};
 
     @SubscribeEvent
-    public void onTickEvent(TickEvent.PlayerTickEvent event) {
+    public void onRenderGameOverlayEvent(RenderGameOverlayEvent.Pre event) {
         if (gameInProgress) inGameDuration = System.currentTimeMillis() - gameStartedTime;
         if (roundInProgress != null) inRoundDuration = System.currentTimeMillis() - roundStartedTime;
-        if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean() && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Enabled").getBoolean() && GameData.gameHasStarted) {
+        if (event.type.equals(RenderGameOverlayEvent.ElementType.BOSSHEALTH) && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean() && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Enabled").getBoolean() && GameData.gameHasStarted) {
             if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").getString().equals("Full Game")) {
                 time = inGameDuration;
                 String category = isWinEligible ? "Win" : "Complete%";
@@ -134,6 +133,10 @@ public class Speedrun {
                     }
                 }
             }
+            BossStatus.setBossStatus(new EntityWither(Minecraft.getMinecraft().theWorld), true);
+            BossStatus.bossName = String.format("\u00A7%s%s", color, Utils.formatTime(time));
+            BossStatus.healthScale = Math.min(scale, 1);
+            if (color == null) event.setCanceled(true);
         }
     }
 
@@ -234,19 +237,6 @@ public class Speedrun {
                 gameInProgress = false;
                 Utils.sendChat(String.format("You were unable to beat your %s personal best", category));
                 Minecraft.getMinecraft().thePlayer.sendChatMessage("/play arcade_simon_says");
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onRenderGameOverlayEvent(RenderGameOverlayEvent.Pre event) {
-        if (event.type.equals(RenderGameOverlayEvent.ElementType.BOSSHEALTH)) {
-            if (color == null) {
-                event.setCanceled(true);
-            } else if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Enabled").getBoolean() && GameData.inHypixelSays) {
-                BossStatus.setBossStatus(new EntityWither(Minecraft.getMinecraft().theWorld), true);
-                BossStatus.bossName = String.format("\u00A7%s%s", color, Utils.formatTime(time));
-                BossStatus.healthScale = Math.min(scale, 1);
             }
         }
     }
