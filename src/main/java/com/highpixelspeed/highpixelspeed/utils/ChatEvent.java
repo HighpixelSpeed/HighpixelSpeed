@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ChatEvent {
-    static int count = 0;
-    static String[] list = new String[80];
 
     @SubscribeEvent(receiveCanceled = true)
     public void onChat(ClientChatReceivedEvent event){
@@ -68,10 +66,6 @@ public class ChatEvent {
         }
 
         if (message.startsWith("NEXT TASK")) {
-            if (!Arrays.asList(list).contains(message)) {
-                list[count] = message;
-                count++;
-            }
             ArrayList<String> lines = (ArrayList<String>) getSidebarLines();
             for(String line : lines){
                 if(line.contains(Minecraft.getMinecraft().thePlayer.getDisplayNameString()) && line.split(":").length==2 ){
