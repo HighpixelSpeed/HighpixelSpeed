@@ -53,6 +53,7 @@ public class JoinWorld {
     public void onPlayerLogin(EntityJoinWorldEvent event) {
         if (event.entity instanceof EntityPlayer) {
             Utils.tagWins((EntityPlayer) event.entity);
+            Speedrun.roundStartedTime = 0L;
             try {
                 if (doServerCheck && StringUtils.stripControlCodes(Minecraft.getMinecraft().theWorld.getScoreboard().getObjective("PreScoreboard").getDisplayName()).endsWith(" SAYS")) { // Minigame is HYPIXEL SAYS or SANTA SAYS
                     doServerCheck = false;
@@ -147,7 +148,6 @@ public class JoinWorld {
 
             Speedrun.gameStartedTime = System.currentTimeMillis();
             Speedrun.gameInProgress = true; // Start game run
-            Speedrun.inRoundDuration = 0L;
         }
     }
 }

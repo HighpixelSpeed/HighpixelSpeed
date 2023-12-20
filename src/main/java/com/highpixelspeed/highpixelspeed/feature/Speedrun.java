@@ -46,7 +46,7 @@ public class Speedrun {
 
 
     }
-    static long roundStartedTime = 0L;
+    public static long roundStartedTime = 0L;
     static Round roundInProgress = null;
     static Round lastRound = Round.OTHER;
     public static long inRoundDuration = 0L;
@@ -133,10 +133,12 @@ public class Speedrun {
                     }
                 }
             }
-            BossStatus.setBossStatus(new EntityWither(Minecraft.getMinecraft().theWorld), true);
-            BossStatus.bossName = String.format("\u00A7%s%s", color, Utils.formatTime(time));
-            BossStatus.healthScale = Math.min(scale, 1);
-            if (color == null) event.setCanceled(true);
+            if (GameData.inHypixelSays) {
+                BossStatus.setBossStatus(new EntityWither(Minecraft.getMinecraft().theWorld), true);
+                BossStatus.bossName = String.format("\u00A7%s%s", color, Utils.formatTime(time));
+                BossStatus.healthScale = Math.min(scale, 1);
+                if (color == null) event.setCanceled(true);
+            }
         }
     }
 

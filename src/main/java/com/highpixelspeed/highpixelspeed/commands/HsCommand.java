@@ -164,6 +164,7 @@ public class HsCommand extends CommandBase {
                 } else if (args[1].equalsIgnoreCase("round")) { //hs speedrun round
                     Utils.sendChat(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").getString().equals("Individual Rounds") ? "Level mode is already set to Individual Rounds" : "Level mode set to Individual Rounds");
                     ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Level").set("Individual Rounds");
+                    if (GameData.inHypixelSays) Speedrun.color = null;
                 } else if (args[1].equalsIgnoreCase("all")) { //hs speedrun all
                     ConfigHandler.toggle(ConfigHandler.CATEGORY_SPEEDRUN, "Time All Rounds");
                     Utils.sendChat(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Time All Rounds").getBoolean() ? "Timing all rounds is enabled" : "Only speedrun category rounds will be timed");
