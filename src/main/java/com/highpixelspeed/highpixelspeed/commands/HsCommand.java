@@ -14,7 +14,7 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
+// import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.BlockPos;
@@ -60,7 +60,7 @@ public class HsCommand extends CommandBase {
                 Utils.sendChat("\u00A7m                                                                             ");
                 Utils.sendChat("\u00A7e/hs help \u00A7bDisplay this message\n");
                 Utils.sendChat(String.format("\u00A7%s/hs \u00A7bEnable the whole mod", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean()) ? "a" : "c"));
-                Utils.sendChat(String.format("\u00A7%s/hs autododge \u00A7bQueue dodge players with a certain number of wins. Use \u00A7e/hs autododge help\u00A7b for options", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) ? "a" : "c"));
+                // Utils.sendChat(String.format("\u00A7%s/hs autododge \u00A7bQueue dodge players with a certain number of wins. Use \u00A7e/hs autododge help\u00A7b for options", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) ? "a" : "c"));
                 Utils.sendChat(String.format("\u00A7%s/hs blacklist \u00A7bQueue dodge players whom you have blacklisted. Use \u00A7e/hs blacklist help\u00A7b for options", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Enabled").getBoolean()) ? "a" : "c"));
                 Utils.sendChat(String.format("\u00A7%s/hs empty \u00A7bRequeue if there aren't enough players to start", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Leave Empty Queue").getBoolean()) ? "a" : "c"));
                 Utils.sendChat(String.format("\u00A7%s/hs forty \u00A7bCancel requeuing if you can get 40 points", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Forty Point Mode").getBoolean()) ? "a" : "c"));
@@ -69,18 +69,18 @@ public class HsCommand extends CommandBase {
                 Utils.sendChat(String.format("\u00A7%s/hs party \u00A7bCancel requeuing if you are in a party", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Queue With Party").getBoolean()) ? "a" : "c"));
                 Utils.sendChat(String.format("\u00A7%s/hs speedrun \u00A7bTime your games for speedrunning. Use \u00A7e/hs speedrun help\u00A7b for options", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_SPEEDRUN).get("Enabled").getBoolean()) ? "a" : "c"));
                 Utils.sendChat(String.format("\u00A7%s/hs stats \u00A7bShow summary of stats during current play session. Use \u00A7e/hs stats help\u00A7b for options", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).get("Enabled").getBoolean()) ? "a" : "c"));
-                Utils.sendChat(String.format("\u00A7%s/hs tagwins \u00A7bShow Hypixel Says win count above players' heads", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean()) ? "a" : "c"));
+                // Utils.sendChat(String.format("\u00A7%s/hs tagwins \u00A7bShow Hypixel Says win count above players' heads", (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean()) ? "a" : "c"));
                 Utils.sendChat("\u00A7e/hs play \u00A7bJoin Hypixel Says");
                 Utils.sendChat("\u00A7m                                                                             ");
             }
 
-            else if(args[0].equalsIgnoreCase("autododge")) { //hs autododge
+            /*else if(args[0].equalsIgnoreCase("autododge")) { //hs autododge
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_AUTODODGE, "Enabled");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) ? "Auto dodge is enabled" : "Auto dodge is disabled");
                 if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) {
                     Utils.sendChat("Auto dodge wins threshold: \u00A7e" + ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Wins Threshold").getInt());
                 }
-            }else if(args[0].equalsIgnoreCase("blacklist")) { //hs blacklist
+            }*/else if(args[0].equalsIgnoreCase("blacklist")) { //hs blacklist
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_BLACKLIST, "Enabled");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_BLACKLIST).get("Enabled").getBoolean()) ? "Blacklist is enabled" : "Blacklist is disabled");
             } else if(args[0].equalsIgnoreCase("empty")) { //hs empty
@@ -108,14 +108,14 @@ public class HsCommand extends CommandBase {
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_STATS, "Enabled");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).get("Enabled").getBoolean()) ? "Session Stats are enabled" : "Session Stats are disabled");
                 Utils.redrawSessionStats();
-            } else if(args[0].equalsIgnoreCase("tagwins")) { //hs tagwins
+            } /*else if(args[0].equalsIgnoreCase("tagwins")) { //hs tagwins
                 ConfigHandler.toggle(ConfigHandler.CATEGORY_GENERAL, "Tag Wins");
                 Utils.sendChat((ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean()) ? "Tagging Wins is enabled" : "Tagging Wins is disabled");
                 for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) Utils.tagWins(player);
-            }
+            }*/
 
         } else if(args.length == 2){
-            if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_AUTODODGE)) {
+            /*if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_AUTODODGE)) {
                 if(args[1].equalsIgnoreCase("help")) { //hs autododge help
                     Utils.sendChat("\u00A7m                                                                             ");
                     Utils.sendChat("\u00A7e/hs autododge help \u00A7bDisplay this message\n");
@@ -132,7 +132,7 @@ public class HsCommand extends CommandBase {
                         Utils.sendChat("Please enter a valid integer");
                     }
                 }
-            } else if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_BLACKLIST)) {
+            } else */if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_BLACKLIST)) {
                 if(args[1].equalsIgnoreCase("help")) { //hs blacklist help
                     Utils.sendChat("\u00A7m                                                                             ");
                     Utils.sendChat("\u00A7e/hs blacklist help \u00A7bDisplay this message\n");
@@ -173,7 +173,7 @@ public class HsCommand extends CommandBase {
                 } else if (args[1].equalsIgnoreCase("stats")) { //hs speedrun stats
                     boolean sentMessage = false;
                     Utils.sendChat("Your speedrun personal bests:");
-                    for (String category : Arrays.asList("Win", "Complete%", "Anvil", "Iron Golem", "Parkour", "Jump off Platform", "Pig off Platform", "Full Inventory")) {
+                    for (String category : Arrays.asList("Win", "Complete%", "Anvil", "Iron Golem", "Parkour", "Jump off Platform", "Pig off Platform", "Full Inventory", "Get to Full Hunger", "Shear the Sheep", "Brew a Potion", "Repair an Item", "Enchant an Item", "Put a Music Disc in the Jukebox", "Feed the Sheep", "Jump onto the Platform")) {
                         try {
                             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(String.format("\u00A7%s%s \u00A7b%s",
                                     Speedrun.publicPersonalBests.get(category) == 0 ? "e" : "a",
@@ -366,11 +366,11 @@ public class HsCommand extends CommandBase {
         ArrayList<String> playerNames = new ArrayList<String>() {{ tabList.iterator().forEachRemaining(playerInfo -> add(playerInfo.getGameProfile().getName())); }};
 
         if(args.length == 1){
-             return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "autododge", "blacklist", "empty", "forty", "fortyonly", "loss", "play", "party", "speedrun", "stats", "tagwins")));
+             return matchingArgs(args, new ArrayList<>(Arrays.asList("help", /*"autododge",*/ "blacklist", "empty", "forty", "fortyonly", "loss", "play", "party", "speedrun", "stats"/*, "tagwins"*/)));
         } else if(args.length == 2) {
-            if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_AUTODODGE)) {
+            /*if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_AUTODODGE)) {
                 return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "2500", "10000")));
-            } else if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_BLACKLIST)) {
+            } else*/ if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_BLACKLIST)) {
                 return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "add", "list", "remove")));
             } else if(args[0].equalsIgnoreCase(ConfigHandler.CATEGORY_SPEEDRUN)) {
                 return matchingArgs(args, new ArrayList<>(Arrays.asList("help", "game", "round", "all", "name", "requeue", "stats", "reset")));

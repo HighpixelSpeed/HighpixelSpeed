@@ -32,6 +32,14 @@ public class Speedrun {
         JUMP("Jump off Platform"),
         PIG("Pig off Platform"),
         INVENTORY("Full Inventory"),
+        HUNGER("Get to Full Hunger"),
+        SHEAR("Shear the Sheep"),
+        POTION("Brew a Potion"),
+        REPAIR("Repair an Item"),
+        ENCHANT("Enchant an Item"),
+        JUKEBOX("Put a Music Disc in the Jukebox"),
+        SHEEP("Feed the Sheep"),
+        PLATFORM("Jump onto the Platform"),
         OTHER(null);
 
 
@@ -65,6 +73,14 @@ public class Speedrun {
         put("Jump off Platform", 0L);
         put("Pig off Platform", 0L);
         put("Full Inventory", 0L);
+        put("Get to Full Hunger", 0L);
+        put("Shear the Sheep", 0L);
+        put("Brew a Potion", 0L);
+        put("Repair an Item", 0L);
+        put("Enchant an Item", 0L);
+        put("Put a Music Disc in the Jukebox", 0L);
+        put("Feed the Sheep", 0L);
+        put("Jump onto the Platform", 0L);
     }};
     public static HashMap<String, Long> worldRecords = new HashMap<String, Long>() {{
         put("Win", 0L);
@@ -75,6 +91,14 @@ public class Speedrun {
         put("Jump off Platform", 0L);
         put("Pig off Platform", 0L);
         put("Full Inventory", 0L);
+        put("Get to Full Hunger", 0L);
+        put("Shear the Sheep", 0L);
+        put("Brew a Potion", 0L);
+        put("Repair an Item", 0L);
+        put("Enchant an Item", 0L);
+        put("Put a Music Disc in the Jukebox", 0L);
+        put("Feed the Sheep", 0L);
+        put("Jump onto the Platform", 0L);
     }};
     static final HashMap<String, String> levelIDs = new HashMap<String, String>() {{
         put("5wke0mpw", "Anvil");
@@ -83,6 +107,14 @@ public class Speedrun {
         put("xd4ep5rw", "Jump off Platform");
         put("xd0npe49", "Pig off Platform");
         put("rw6g27g9", "Full Inventory");
+        put("9gyzzgk9", "Get to Full Hunger");
+        put("95kjj1j9", "Shear the Sheep");
+        put("dqz00k1d", "Brew a Potion");
+        put("d7y77mvd", "Repair an Item");
+        put("wj7yyqzw", "Enchant an Item");
+        put("wo7kkpy9", "Put a Music Disc in the Jukebox");
+        put("d1j00q6d", "Feed the Sheep");
+        put("wp7pp6zw", "Jump onto the Platform");
     }};
 
     @SubscribeEvent
@@ -251,6 +283,14 @@ public class Speedrun {
         else if (message.contains("jump off")) return Round.JUMP; // Jump off the platform
         else if (message.contains("ride a pig")) return Round.PIG; // Ride a pig off the platform
         else if (message.contains("inventory completely")) return Round.INVENTORY; // Make your inventory completely full
+        else if (message.contains("you're full")) return Round.HUNGER; // Eat until you're full
+        else if (message.contains("the sheep")) return Round.SHEAR; // Shear the sheep
+        else if (message.contains("brew a potion")) return Round.POTION; // Brew a potion of effect using ingredient
+        else if (message.contains("repair a")) return Round.REPAIR; // Repair a material item to full durability
+        else if (message.contains("enchant a")) return Round.ENCHANT; // Enchant a material item
+        else if (message.contains("a music disc")) return Round.JUKEBOX; // Insert a music disc into the jukebox
+        else if (message.contains("both sheep")) return Round.SHEEP; // Feed both sheep
+        else if (message.contains("floating platform")) return Round.PLATFORM; // Jump up to the floating platform using a Potion of leaping
         else if (isFinishableRound(message)) return Round.OTHER; // Rounds that can be completed before the end of the round
         else return null;
     }
@@ -331,6 +371,14 @@ public class Speedrun {
         publicPersonalBests.put("Jump off Platform", 0L);
         publicPersonalBests.put("Pig off Platform", 0L);
         publicPersonalBests.put("Full Inventory", 0L);
+        publicPersonalBests.put("Get to Full Hunger", 0L);
+        publicPersonalBests.put("Shear the Sheep", 0L);
+        publicPersonalBests.put("Brew a Potion", 0L);
+        publicPersonalBests.put("Repair an Item", 0L);
+        publicPersonalBests.put("Enchant an Item", 0L);
+        publicPersonalBests.put("Put a Music Disc in the Jukebox", 0L);
+        publicPersonalBests.put("Feed the Sheep", 0L);
+        publicPersonalBests.put("Jump onto the Platform", 0L);
     }
 
     public static long getPersonalBest(String category) {

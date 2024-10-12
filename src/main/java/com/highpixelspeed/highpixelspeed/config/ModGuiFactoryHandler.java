@@ -48,7 +48,7 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
         // Main config screen elements
         private static List<IConfigElement> getConfigElements() {
             List<IConfigElement> list = new ArrayList<>(new ConfigElement(ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL)).getChildElements());
-            list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_AUTODODGE, "gui.config.autododge", AutoDodgeEntry.class));
+            // list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_AUTODODGE, "gui.config.autododge", AutoDodgeEntry.class));
             list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_BLACKLIST, "gui.config.blacklist", BlacklistEntry.class));
             list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_SPEEDRUN, "gui.config.speedrun", SpeedrunEntry.class));
             list.add(new DummyCategoryElement(ConfigHandler.CATEGORY_STATS, "gui.config.stats", StatsEntry.class));
@@ -56,7 +56,7 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
         }
 
         // Auto dodge config screen
-        public static class AutoDodgeEntry extends GuiConfigEntries.CategoryEntry {
+        /*public static class AutoDodgeEntry extends GuiConfigEntries.CategoryEntry {
 
             public AutoDodgeEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement element) {
                 super(owningScreen, owningEntryList, element);
@@ -76,7 +76,7 @@ public class ModGuiFactoryHandler implements IModGuiFactory {
                     ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).getComment()
                 );
             }
-        }
+        }*/
 
         // Blacklist config screen
         public static class BlacklistEntry extends GuiConfigEntries.CategoryEntry {

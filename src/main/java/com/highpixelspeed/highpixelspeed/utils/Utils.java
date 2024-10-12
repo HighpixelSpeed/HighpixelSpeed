@@ -7,7 +7,7 @@ import com.google.gson.JsonParser;
 import com.highpixelspeed.highpixelspeed.config.ConfigHandler;
 import com.highpixelspeed.highpixelspeed.data.GameData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+// import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StringUtils;
 import org.apache.http.HttpResponse;
@@ -299,7 +299,7 @@ public class Utils {
         else return Math.min(a, b);
     }
 
-    public static void tagWins(EntityPlayer player) {
+    /*public static void tagWins(EntityPlayer player) {
         if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Tag Wins").getBoolean()) {
             try {
                 drawTag(player, GameData.hsWins.get(player.getUniqueID().toString()));
@@ -318,9 +318,9 @@ public class Utils {
         } else {
             player.getPrefixes().clear();
         }
-    }
+    }*/
 
-    static void drawTag(EntityPlayer player, int wins) {
+    /*static void drawTag(EntityPlayer player, int wins) {
         player.getPrefixes().clear();
         player.addPrefix(new ChatComponentText(String.format("\u00A7b[%s%s\u00A7b] ",
                 wins == 0 ?
@@ -329,7 +329,7 @@ public class Utils {
                         "\u00A7a" :
                         "\u00A7e",
                 wins)));
-    }
+    }*/
 
     public static void redrawSessionStats() {
         if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_GENERAL).get("Enabled").getBoolean() && ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_STATS).get("Enabled").getBoolean()) {

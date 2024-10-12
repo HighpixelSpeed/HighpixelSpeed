@@ -23,11 +23,11 @@ These settings can also be changed in the Forge mod config. The default values c
 `/hs party` Toggle requeuing normally even if you are in a party  
 `/hs play` Join Hypixel Says.
 
-#### Autododge
+<!--#### Autododge
 Autododge will requeue if any players in your queue are over a certain threshold of wins.  
 `/hs autododge` Toggle autododge.  
 `/hs autododge help` Show a summary of these commands.  
-`/hs autododge <wins>` Set the number of wins the player must have to scare you.
+`/hs autododge <wins>` Set the number of wins the player must have to scare you.-->
 
 #### Blacklist
 You can add players who always beat you to your blacklist, and they will always be avoided in the future.
@@ -88,10 +88,10 @@ Hover over a time to see the world record.
 `/hs speedrun reset` Erase your personal bests.
 This cannot be undone.
 
-#### Tag Wins
+<!--#### Tag Wins
 Similar to the mod Levelhead, the Hypixel Says wins of players around you are shown. The color of the number indicates that the player has the following:  
 **Gray**: 0 wins  
 **Yellow**: At least one win  
 **Green**: More wins than you  
 **Gold**: Enough wins to dodge, if Autododge is enabled  
-`/hs tagwins` Toggle whether to tag players' wins by their names.
+`/hs tagwins` Toggle whether to tag players' wins by their names.-->

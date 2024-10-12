@@ -4,9 +4,9 @@ import com.google.gson.*;
 import com.highpixelspeed.highpixelspeed.HighpixelSpeed;
 import com.highpixelspeed.highpixelspeed.feature.Speedrun;
 import com.highpixelspeed.highpixelspeed.utils.Utils;
-import net.minecraft.client.Minecraft;
+// import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+// import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -22,7 +22,7 @@ public class ConfigHandler {
 
     public static Configuration config;
     public static final String CATEGORY_GENERAL = Configuration.CATEGORY_GENERAL;
-    public static final String CATEGORY_AUTODODGE = "autododge";
+    // public static final String CATEGORY_AUTODODGE = "autododge";
     public static final String CATEGORY_BLACKLIST = "blacklist";
     public static final String CATEGORY_SPEEDRUN = "speedrun";
     public static final String CATEGORY_STATS = "stats";
@@ -30,7 +30,7 @@ public class ConfigHandler {
     public static void init(File file) {
         config = new Configuration(file);
         config.addCustomCategoryComment(CATEGORY_GENERAL, I18n.format("gui.config.general.tooltip"));
-        config.addCustomCategoryComment(CATEGORY_AUTODODGE, I18n.format("gui.config.autododge.tooltip"));
+        // config.addCustomCategoryComment(CATEGORY_AUTODODGE, I18n.format("gui.config.autododge.tooltip"));
         config.addCustomCategoryComment(CATEGORY_BLACKLIST, I18n.format("gui.config.blacklist.tooltip"));
         config.addCustomCategoryComment(CATEGORY_SPEEDRUN, I18n.format("gui.config.speedrun.tooltip"));
         config.addCustomCategoryComment(CATEGORY_STATS, I18n.format("gui.config.stats.tooltip"));
@@ -49,15 +49,15 @@ public class ConfigHandler {
         config.get(CATEGORY_GENERAL, "Queue With Party", false, "Requeue normally even if you are in a party");
         propOrder.add("Queue With Party");
         config.get(CATEGORY_GENERAL, "Tag Wins", false, "Show Hypixel Says win count above players' heads");
-        propOrder.add("Tag Wins");
-        config.getCategory(CATEGORY_GENERAL).setPropertyOrder(propOrder);
+        /*propOrder.add("Tag Wins");
+        config.getCategory(CATEGORY_GENERAL).setPropertyOrder(propOrder);*/
 
-        propOrder = new ArrayList<>();
+        /*propOrder = new ArrayList<>();
         config.get(CATEGORY_AUTODODGE, "Enabled", false, "Queue dodge people with a certain number of wins");
         propOrder.add("Enabled");
         config.get(CATEGORY_AUTODODGE, "Wins Threshold", 1000, "The number of wins the player must have");
         propOrder.add("Wins Threshold");
-        config.getCategory(CATEGORY_AUTODODGE).setPropertyOrder(propOrder);
+        config.getCategory(CATEGORY_AUTODODGE).setPropertyOrder(propOrder);*/
 
         propOrder = new ArrayList<>();
         config.get(CATEGORY_BLACKLIST, "Enabled", false, "Enable queue dodging blacklisted players");
@@ -82,7 +82,15 @@ public class ConfigHandler {
                 "Parkour\n" +
                 "Jump Off Platform\n" +
                 "Pig Off Platform\n" +
-                "Full Inventory", new String[] {"Full Game", "Individual Rounds"});
+                "Full Inventory\n" +
+                "Get to Full Hunger\n" +
+                "Shear the Sheep\n" +
+                "Brew a Potion\n" +
+                "Repair an Item\n" +
+                "Enchant an Item\n" +
+                "Put a Music Disc in the Jukebox\n" +
+                "Feed the Sheep\n" +
+                "Jump onto the Platform", new String[] {"Full Game", "Individual Rounds"});
         propOrder.add("Level");
         config.get(CATEGORY_SPEEDRUN, "Time All Rounds", false, "If the level mode is set to Individual Rounds, time every round, not only the speedrun category rounds");
         propOrder.add("Time All Rounds");
@@ -106,6 +114,22 @@ public class ConfigHandler {
         propOrder.add("Pig off Platform");
         config.get(CATEGORY_SPEEDRUN, "Full Inventory", 0, "Your personal best for the Full Inventory round").setShowInGui(false);
         propOrder.add("Full Inventory");
+        config.get(CATEGORY_SPEEDRUN, "Get to Full Hunger", 0, "Your personal best for the Get to Full Hunger round").setShowInGui(false);
+        propOrder.add("Get to Full Hunger");
+        config.get(CATEGORY_SPEEDRUN, "Shear the Sheep", 0, "Your personal best for the Shear the Sheep round").setShowInGui(false);
+        propOrder.add("Shear the Sheep");
+        config.get(CATEGORY_SPEEDRUN, "Brew a Potion", 0, "Your personal best for the Brew a Potion round").setShowInGui(false);
+        propOrder.add("Brew a Potion");
+        config.get(CATEGORY_SPEEDRUN, "Repair an Item", 0, "Your personal best for the Repair an Item round").setShowInGui(false);
+        propOrder.add("Repair an Item");
+        config.get(CATEGORY_SPEEDRUN, "Enchant an Item", 0, "Your personal best for the Enchant an Item round").setShowInGui(false);
+        propOrder.add("Enchant an Item");
+        config.get(CATEGORY_SPEEDRUN, "Put a Music Disc in the Jukebox", 0, "Your personal best for the Put a Music Disc in the Jukebox round").setShowInGui(false);
+        propOrder.add("Put a Music Disc in the Jukebox");
+        config.get(CATEGORY_SPEEDRUN, "Feed the Sheep", 0, "Your personal best for the Feed the Sheep round").setShowInGui(false);
+        propOrder.add("Feed the Sheep");
+        config.get(CATEGORY_SPEEDRUN, "Jump onto the Platform", 0, "Your personal best for the Jump onto the Platform round").setShowInGui(false);
+        propOrder.add("Jump onto the Platform");
         config.getCategory(CATEGORY_SPEEDRUN).setPropertyOrder(propOrder);
 
         propOrder = new ArrayList<>();
@@ -202,9 +226,9 @@ public class ConfigHandler {
             }
             reloadBlacklist();
         }
-        if (event.modID.equals(HighpixelSpeed.MODID) && config.getCategory(CATEGORY_GENERAL).get("Tag Wins").hasChanged() || config.getCategory(CATEGORY_AUTODODGE).get("Wins Threshold").hasChanged()) {
+        /*if (event.modID.equals(HighpixelSpeed.MODID) && config.getCategory(CATEGORY_GENERAL).get("Tag Wins").hasChanged() || config.getCategory(CATEGORY_AUTODODGE).get("Wins Threshold").hasChanged()) {
             for (EntityPlayer player : Minecraft.getMinecraft().theWorld.playerEntities) Utils.tagWins(player);
-        }
+        }*/
         if (event.modID.equals(HighpixelSpeed.MODID) && config.getCategory(CATEGORY_GENERAL).get("Enabled").hasChanged() || config.getCategory(CATEGORY_STATS).get("Enabled").hasChanged()) {
             Utils.redrawSessionStats();
         }

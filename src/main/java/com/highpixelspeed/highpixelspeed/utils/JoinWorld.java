@@ -11,7 +11,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import org.apache.http.client.methods.HttpGet;
+// import org.apache.http.client.methods.HttpGet;
 
 import java.util.*;
 
@@ -52,7 +52,7 @@ public class JoinWorld {
     @SubscribeEvent
     public void onPlayerLogin(EntityJoinWorldEvent event) {
         if (event.entity instanceof EntityPlayer) {
-            Utils.tagWins((EntityPlayer) event.entity);
+            // Utils.tagWins((EntityPlayer) event.entity);
             Speedrun.roundStartedTime = 0L;
             try {
                 if (doServerCheck && StringUtils.stripControlCodes(Minecraft.getMinecraft().theWorld.getScoreboard().getObjective("PreScoreboard").getDisplayName()).endsWith(" SAYS")) { // Minigame is HYPIXEL SAYS or SANTA SAYS
@@ -123,7 +123,7 @@ public class JoinWorld {
             }
 
             // Autododge
-            if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) {
+            /*if (ConfigHandler.config.getCategory(ConfigHandler.CATEGORY_AUTODODGE).get("Enabled").getBoolean()) {
                 while (!newPlayerUUIDs.isEmpty()) {
                     try {
                         Utils.asyncHttpGet("www.highpixelspeed.com", "player", new HashMap<String, String>() {{put("uuid", Objects.requireNonNull(newPlayerUUIDs.poll()).toString());}}, response -> {
@@ -138,7 +138,7 @@ public class JoinWorld {
                         });
                     } catch (Exception ignored) {}
                 }
-            }
+            }*/
         }
 
         // When the game starts, the player is teleported above the island
